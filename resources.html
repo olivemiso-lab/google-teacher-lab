@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>준비 자료 · Google Teacher Lab</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%232f6b4f'/%3E%3Cpath d='M10 19c4 0 6-3 6-8 0 5 2 8 6 8-4 0-6 3-6 6 0-3-2-6-6-6z' fill='%23f2c94c'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="top" id="top"></header>
+<main class="wrap">
+  <h1 style="font-size:1.8rem">준비 자료</h1>
+  <p class="muted">공식 안내를 정리한 인증 가이드, 트레이너 준비 양식, 교사에게 필요한 새소식을 모았어요.</p>
+  <ul class="toc"><li><a href="#guides">🧭 인증 가이드</a></li><li><a href="kit.html">🧰 트레이너 준비 양식</a></li><li><a href="#news">📰 새소식</a></li><li><a href="path.html">📘 미션 60개</a></li></ul>
+
+  <section id="guides">
+    <h2>인증 가이드</h2>
+    <p class="note small">Google for Education 공식 자료를 바탕으로 정리했어요. 시험 형식·비용·절차는 바뀔 수 있으니 응시 직전에 공식 페이지에서 다시 확인하세요. 실제 시험 문항은 다루지 않아요.</p>
+    <div id="guide-list"></div>
+  </section>
+
+  <section id="news">
+    <h2>새소식</h2>
+    <div class="grid g2" id="news-list"></div>
+  </section>
+</main>
+<footer class="foot" id="foot"></footer>
+<script src="js/config.js"></script>
+<script src="data/content.js"></script>
+<script src="js/common.js"></script>
+<script>
+(function () {
+  const { C, esc, header } = window.GTL;
+  header('resources.html');
+  const icon = { level1: '🌱', level2: '🚀', trainer: '🎓', gemini: '✨' };
+  const host = (u) => { try { return new URL(u).hostname.replace(/^www\./, ''); } catch (e) { return u; } };
+  const row = (k, v) => v ? `<div style="margin:10px 0"><b class="small">${k}</b><p class="muted" style="margin:2px 0 0">${esc(v)}</p></div>` : '';
+  document.getElementById('guide-list').innerHTML = C.guides.map((g, i) => `
+    <details class="card week" id="g-${g.slug}"${location.hash === '#g-' + g.slug || (!location.hash.startsWith('#g-') && i === 0) ? ' open' : ''}>
+      <summary style="cursor:pointer"><b>${icon[g.slug] || '📘'} ${esc(g.title)}</b><span class="muted small"> — ${esc(g.summary)}</span></summary>
+      ${row('누구에게', g.who_for)}${row('준비 방법', g.preparation)}${row('절차', g.process)}${row('비용', g.fee_text)}${row('유효기간·유지', g.validity_text)}
+      ${g.operator_tip ? `<p class="note green small">💡 ${esc(g.operator_tip)}</p>` : ''}
+      <p class="small" style="margin:10px 0 4px"><b>공식 링크</b></p>
+      <ul class="checks small">${g.official_links.map((u) => `<li><a href="${esc(u)}" target="_blank" rel="noopener">${esc(host(u))} ↗</a></li>`).join('')}</ul>
+      <p class="tiny" style="margin:8px 0 0">최종 확인일 ${esc(g.verification_date)} · ${esc(g.notice)}</p>
+    </details>`).join('');
+  document.getElementById('news-list').innerHTML = C.news.map((n) => `
+    <article class="card">
+      <p class="tiny" style="margin:0 0 4px">${esc(n.published_date)} · ${esc(n.source)}</p>
+      <h3>${esc(n.title)}</h3>
+      <p class="muted small">${esc(n.summary)}</p>
+      ${row('무엇이 바뀌었나', n.what_changed)}${row('선생님께 의미', n.why_teacher_should_care)}
+      ${n.caution ? `<p class="note small">⚠️ ${esc(n.caution)}</p>` : ''}
+      <p class="small" style="margin:0"><a href="${esc(n.source_url)}" target="_blank" rel="noopener">원문 보기 ↗</a> <span class="tiny">· 확인 ${esc(n.verification_date)}</span></p>
+    </article>`).join('');
+  if (location.hash) document.querySelector(location.hash)?.scrollIntoView();
+})();
+</script>
+</body>
+</html>
