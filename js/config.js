@@ -12,7 +12,7 @@ window.SITE = {
   levelWeeks: 6,
   trainerWeeks: 8,
   meeting: { day: '토요일', time: '밤 9시 ~ 9시 50분', place: 'Google Meet' },
-  capacity: '',                 // 예: '단계별 10명 내외'. 비우면 표시 안 함
+  capacity: 'Trainer반 8명 · Level 1·2반 각 10명 내외', // 비우면 표시 안 함
   formUrl: '',                  // 구글 설문지 신청 링크. 비우면 '준비 중'으로 표시
   threadsUrl: 'https://www.threads.com/@olivece2017',
   email: 'ggteacherlab@gmail.com',

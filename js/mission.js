@@ -51,6 +51,7 @@
     ${m.privacy ? `<p class="note warn small">🔐 ${esc(m.privacy)}</p>` : ''}
     ${m.source ? block('📚', '공식 Google 자료', `<p style="margin:0"><a href="${esc(m.source.url)}" target="_blank" rel="noopener">${esc(m.source.title)} ↗</a></p><p class="tiny" style="margin:4px 0 0">마지막 확인 ${esc(m.checked || '-')}</p>`) : ''}
     ${m.quiz ? block('🧠', '1분 체크', `<p style="font-weight:700">${esc(m.quiz.text)}</p><div id="quiz"></div><div id="quiz-res" role="status"></div>`) : ''}
+    <p class="note green small">💬 막히면 참여자 카톡 질문방에 물어보세요. <b>${m.track === 'level1' ? 'L1' : 'L2'} ${m.week}주차 ${DAY[m.day]}</b>처럼 미션 번호를 붙여 주면 답하기 쉬워요.</p>
     <p class="small muted">🐞 지금 화면과 다른가요? <a href="${report}">운영자에게 알려 주기</a></p>
     <div class="pager">
       ${prev ? `<a class="btn small" href="mission.html?id=${prev.id}">← ${esc(prev.title)}</a>` : '<span></span>'}
