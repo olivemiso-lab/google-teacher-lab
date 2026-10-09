@@ -6,9 +6,9 @@ window.SITE = {
   cohort: '1기',
   // recruiting(모집 중) · running(진행 중) · break(다음 기수 준비 중)
   status: 'recruiting',
-  recruitEnd: '2026-10-31',     // 모집 마감
-  orientation: '2026-11-07',    // 오리엔테이션(토)
-  start: '2026-11-09',          // 1주차 월요일
+  recruitEnd: '2026-10-11',     // 모집 마감
+  orientation: '2026-10-17',    // 오리엔테이션(토). 시작 뒤 첫 토요일이면 첫 모임과 함께 해요
+  start: '2026-10-12',          // 1주차 월요일
   levelWeeks: 6,
   trainerWeeks: 8,
   meeting: { day: '토요일', time: '밤 9시 ~ 9시 50분', place: 'Google Meet' },

@@ -78,7 +78,7 @@
   }
   const rows = [
     ['기간', `${fmt(S.start)}부터 · Level반 ${S.levelWeeks}주, Trainer반 ${S.trainerWeeks}주`],
-    ['오리엔테이션', `${fmt(S.orientation)} ${S.meeting.time.split(' ~')[0]}`],
+    ['오리엔테이션', `${fmt(S.orientation)} ${S.meeting.time.split(' ~')[0]}${S.orientation > S.start ? ' · 첫 토요일 모임과 함께' : ''}`],
     ['모임', `매주 ${S.meeting.day} ${S.meeting.time} · ${S.meeting.place}`],
     ['비용', '무료 · 자율 스터디라 나이스 연수 이력에는 등록되지 않아요'],
   ];

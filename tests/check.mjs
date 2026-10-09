@@ -5,7 +5,7 @@ import vm from 'node:vm';
 const ctx = { window: {}, document: undefined, localStorage: { getItem: () => null, setItem: () => {} } };
 vm.createContext(ctx);
 for (const f of ['js/config.js', 'data/content.js', 'js/common.js']) vm.runInContext(readFileSync(new URL('../' + f, import.meta.url), 'utf8'), ctx);
-const { S, C, cohortNow, kstToday, missionDate, fmt } = ctx.window.GTL;
+const { S, C, cohortNow, kstToday, missionDate, fmt, addDays } = ctx.window.GTL;
 
 let fail = 0;
 const ok = (cond, msg) => { if (!cond) { fail++; console.log('✗ ' + msg); } else console.log('✓ ' + msg); };
@@ -26,14 +26,15 @@ ok(kstToday(new Date('2026-11-08T14:59:00Z')) === '2026-11-08', 'KST 자정 직�
 ok(kstToday(new Date('2026-11-08T15:00:00Z')) === '2026-11-09', 'KST 자정');
 
 // 기수 달력 (시작일 기준)
-ok(cohortNow('2026-11-08').phase === 'before', '시작 전날은 시작 전');
+ok(cohortNow(addDays(S.start, -1)).phase === 'before', '시작 전날은 시작 전');
+ok(new Date(S.start + 'T00:00:00Z').getUTCDay() === 1, '설정의 시작일이 월요일');
 const d0 = cohortNow(S.start);
 ok(d0.week === 1 && d0.dow === 1, '시작일 = 1주차 월요일');
-const sat = cohortNow('2026-11-14');
-ok(sat.week === 1 && sat.dow === 6, '11/14 = 1주차 토요일');
-ok(cohortNow('2026-11-16').week === 2, '11/16 = 2주차');
-ok(cohortNow('2026-12-21').levelDone === true, '12/21이면 Level 6주 끝');
-ok(missionDate(C.missions.find((m) => m.id === 'l1-1-5')) === '2026-11-13', '1주차 금요일 미션 = 11/13');
+const sat = cohortNow(addDays(S.start, 5));
+ok(sat.week === 1 && sat.dow === 6, '시작 5일 뒤 = 1주차 토요일');
+ok(cohortNow(addDays(S.start, 7)).week === 2, '시작 7일 뒤 = 2주차');
+ok(cohortNow(addDays(S.start, 42)).levelDone === true, '6주 뒤 Level 끝');
+ok(missionDate(C.missions.find((m) => m.id === 'l1-1-5')) === addDays(S.start, 4), '1주차 금요일 미션 = 시작 4일 뒤');
 ok(fmt('2026-11-09') === '11월 9일 (월)', '날짜 표기');
 
 console.log(fail ? `\n${fail}개 실패` : '\n모두 통과');

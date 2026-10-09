@@ -55,16 +55,17 @@
 
   // 기수 일정: 설정의 시작일에서 계산
   const sat = (w) => addDays(S.start, (w - 1) * 7 + 5);
+  const otFirst = S.orientation === sat(1); // 오리엔테이션을 첫 토요일 모임과 같이 하는 경우
   const rows = [
     [S.recruitEnd, '모집 마감'],
-    [S.orientation, `오리엔테이션 · ${S.meeting.time.split(' ~')[0]} · 내 단계 확인, 2~3명씩 짝 정하기`],
+    [S.orientation, `${otFirst ? '첫 토요일 모임 · 오리엔테이션' : '오리엔테이션'} · ${S.meeting.time.split(' ~')[0]} · 2~3명씩 짝 정하기`],
     [S.start, '1주차 시작 · 첫 5분 미션이 열려요'],
-    [sat(1), '첫 토요일 모임'],
+    ...(otFirst ? [] : [[sat(1), '첫 토요일 모임']]),
     [sat(S.levelWeeks), `Level 1·2반 마지막 모임 · ${S.levelWeeks}주 마무리`],
     [sat(S.trainerWeeks), `Trainer반 마지막 모임 · 지원서 서로 읽기`],
   ];
   document.getElementById('sched-title').textContent = `${S.cohort} 일정`;
-  document.getElementById('sched').innerHTML = rows.map(([d, t]) =>
+  document.getElementById('sched').innerHTML = rows.sort((a, b) => a[0].localeCompare(b[0])).map(([d, t]) =>
     `<li${d < today ? ' class="muted"' : ''}><span class="when">${fmtShort(d)}</span><span>${esc(t)}</span></li>`).join('');
 
   // 오늘 영역: 기수 시작 전에는 1주차 미리보기, 진행 중에는 오늘 미션
