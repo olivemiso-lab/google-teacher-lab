@@ -36,7 +36,7 @@
   const missionDate = (m) => addDays(S.start, (m.week - 1) * 7 + (m.day - 1));
 
   // 내 기록: 이 브라우저에만 저장된다. 저장소가 막혀 있어도 화면은 그대로 동작한다.
-  const KEY = 'gtl.v1';
+  const KEY = 'gtl.v2'; // v2: 미션 형식이 바뀌어 예전 기록과 섞이지 않게
   let mem = { stage: '', missions: {}, quiz: {}, notes: {} };
   try { const raw = localStorage.getItem(KEY); if (raw) mem = Object.assign(mem, JSON.parse(raw)); } catch (e) { /* 저장 불가 환경 */ }
   const store = {
@@ -58,6 +58,7 @@
   function header(current) {
     const items = [
       ['index.html', '함께 준비하기'],
+      ['start.html', '시작 준비'],
       ['path.html', '단계별 과정'],
       ['resources.html', '준비 자료'],
     ];

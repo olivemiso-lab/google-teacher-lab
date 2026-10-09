@@ -16,7 +16,12 @@ for (const t of ['level1', 'level2']) for (let w = 1; w <= 6; w++) {
   const days = C.missions.filter((m) => m.track === t && m.week === w).map((m) => m.day).join('');
   if (days !== '12345') ok(false, `${t} ${w}주차 요일 빠짐: ${days}`);
 }
-ok(C.missions.every((m) => !m.quiz || m.quiz.options[m.quiz.answer]), '1분 체크 정답이 모두 보기 안에 있음');
+ok(C.missions.every((m) => m.quiz.length === 3 && m.quiz.every((q) => q.options.length === 4 && q.options[q.answer])), '판단 문제는 미션마다 3개, 정답이 보기 안에 있음');
+ok(C.missions.every((m) => m.steps.length >= 3 && m.check.length >= 1 && m.scenario), '상황·지시사항·점검이 모두 있음');
+ok(['l1-6-5', 'l2-6-5'].every((id) => C.missions.find((m) => m.id === id).type === 'mock'), '6주차 금요일은 모의 시험');
+ok(!JSON.stringify(C.missions).includes('Jamboard'), '사라진 도구(Jamboard)가 없음');
+const answerSpread = [0, 1, 2, 3].map((i) => C.missions.flatMap((m) => m.quiz).filter((q) => q.answer === i).length);
+ok(Math.max(...answerSpread) < 0.45 * C.missions.length * 3, `정답 번호가 한쪽에 몰리지 않음 (${answerSpread.join('/')})`);
 ok(C.missions.every((m) => !m.source || /^https:\/\//.test(m.source.url)), '공식 자료 링크는 모두 https');
 ok(C.trainer.length === 8, 'Trainer 로드맵 8단계');
 ok(C.guides.map((g) => g.slug).join() === 'level1,level2,trainer,gemini', '인증 가이드 4종');

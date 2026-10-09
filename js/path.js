@@ -27,8 +27,8 @@
     const titles = C.weeks[stage];
     const DAYS = ['월', '화', '수', '목', '금'];
     const intro = stage === 'level1'
-      ? 'Google 기본 도구를 하루 5분씩 직접 써 봐요. 6주가 끝나면 Level 1 시험 준비가 끝나요.'
-      : '여러 도구를 연결해 수업과 업무를 설계해요. 5~6주차에는 토요일 모임에서 짧은 미니 연수를 처음 해 봐요.';
+      ? '공식 task card 순서대로 도구 12개를 연습 계정과 주고받으며 익혀요. 매일 판단 문제 3개, 금요일은 실전 시나리오, 6주차 금요일은 모의 시험이에요.'
+      : '공식 평가 목표에 맞춰 도구를 연결하는 심화 실습을 해요. 매일 판단 문제 3개, 금요일은 실전 시나리오, 6주차 금요일은 모의 시험이에요.';
     body.innerHTML = `
       <div class="card" style="margin-bottom:20px">
         <div class="week-head"><h2 style="margin:0">${STAGES[stage].icon} ${STAGES[stage].name} · ${S.levelWeeks}주</h2>${pickButton()}</div>
@@ -41,12 +41,13 @@
         const list = C.missions.filter((m) => m.track === stage && m.week === w);
         return `<div class="card week${w === curWeek ? ' is-now' : ''}">
           <div class="week-head"><h3 style="margin:0">${w}주차 · ${esc(t)}</h3><span class="date">${w === curWeek ? '이번 주 · ' : ''}${weekRange(w)}</span></div>
-          <ul class="mlist">${list.map((m) => `<li class="${m.type === 'friday' ? 'fri' : ''}"><a href="mission.html?id=${m.id}">
+          <ul class="mlist">${list.map((m) => `<li class="${m.type === 'daily' ? '' : 'fri'}"><a href="mission.html?id=${m.id}">
             <span class="d">${DAYS[m.day - 1]}</span>
-            <span class="t">${m.type === 'friday' ? '<b>실전</b> · ' : ''}${esc(m.title)}</span>
+            <span class="t">${m.type === 'friday' ? '<b>실전</b> · ' : m.type === 'mock' ? '<b>모의 시험</b> · ' : ''}${esc(m.title)}</span>
             <span class="m">${isDone(m.id) ? '<span class="ok">✓ 완료</span>' : (m.minutes || 5) + '분'}</span></a></li>`).join('')}</ul>
         </div>`;
       }).join('')}
+      <p class="note green small">처음이라면 <a href="start.html">시작 준비</a>에서 연습 계정부터 만들어 주세요.</p>
       <p class="note small">다음 단계: ${stage === 'level1' ? '<a href="?stage=level2">🚀 Level 2</a>' : '<a href="?stage=trainer">🎓 Trainer</a>'} · 시험 안내는 <a href="resources.html#g-${stage}">인증 가이드</a>에서 확인하세요.</p>`;
     bindPick();
     return;
@@ -56,9 +57,9 @@
   const plan = [
     ['출발점 확인', '내 Level 1·2 인증서의 이름·계정·만료일을 확인하고, 트레이너 교육 과정을 시작해요. 미니 연수로 다룰 주제 하나를 골라요.', '서로의 주제를 1분씩 소개'],
     ['연수 계획서', '트레이너 과정을 이어 가며 미니 연수 계획서를 써요.', '계획서 서로 읽고 한 가지씩 제안'],
-    ['미니 연수 ①', '계획서대로 15분 미니 연수를 준비해요. 3~6주차 토요일마다 두 명씩 Level반 선생님들 앞에서 진행해요.', '첫 미니 연수 · 참가자 피드백 받기'],
+    ['미니 연수 ①', '계획서대로 15분 미니 연수를 준비해요. 3~6주차 토요일 반별 시간에 Level 1·2반에 한 명씩 들어가 15분 연수 → 10분 실습 → 5분 피드백으로 진행해요. 주제는 그 주 Level반이 막힌 곳에서 골라요.', '첫 미니 연수 · 참가자 피드백 받기'],
     ['역량 평가', '트레이너 역량 평가(Trainer Skills Assessment)를 응시해요. 학교나 동학년에서 할 연수도 한 번 계획해요.', '평가 후기 나누기 · 미니 연수'],
-    ['영상 대본·촬영', '2~3분 시연 영상의 대본을 쓰고 찍어 봐요. 3분을 넘기지 않아요.', '대본 서로 읽기 · 미니 연수'],
+    ['영상 대본·촬영', '2~3분 시연 영상의 대본을 쓰고 찍어 봐요. 공식 안내대로 3분을 넘기지 않아요.', '대본 서로 읽기 · 미니 연수'],
     ['영상 다듬기', '서로의 영상을 보고 고친 뒤 다시 찍어요.', '영상 함께 보기 · 미니 연수'],
     ['활동 3~5개 정리', '최근 1년간 내가 이끈 Google 관련 활동을 양식에 맞춰 정리해요. 스터디 미니 연수도 기록해 둬요.', '활동 기록 서로 점검'],
     ['지원서', '지원서 답변 초안을 쓰고 제출 전 점검표로 확인해요.', '답변 서로 읽기 · 마무리'],

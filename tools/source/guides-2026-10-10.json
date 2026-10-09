@@ -1,0 +1,21 @@
+{
+  "level1": {
+    "process": "공식 인증 페이지에서 Level 1과 응시 언어를 골라 등록해요. 한국어는 객관식 37문항과 실습 시나리오 3개, 3시간이에요. 실습은 연습용 계정을 받아 지시사항을 해내는 방식이에요. 떨어지면 8일 뒤 다시 볼 수 있어요.",
+    "preparation": "공식 시험 가이드의 평가 목표와 Level 1 task card(2025-08-07판, 도구 12개 체크리스트)를 기준으로, Basic use of Google Workspace for Education Fundamentals 과정과 단원별 확인 퀴즈로 준비하세요. 연습 계정을 하나 더 만들어 공유·초대·제출을 직접 주고받아 보세요.",
+    "fee_text": "무료 (모든 응시 언어, 공식 FAQ 기준).",
+    "verification_date": "2026-10-10",
+    "official_links": ["https://support.google.com/googleforeducation/answer/16542372?hl=ko", "https://support.google.com/googleforeducation/answer/16542371?hl=ko", "https://services.google.com/fh/files/misc/level1_certified_educator_exam_guide.pdf", "https://services.google.com/fh/files/misc/google_certified_educator_level1_basic_tasks.pdf", "https://edu.google.com/learning-center/"]
+  },
+  "level2": {
+    "process": "공식 인증 페이지에서 Level 2와 응시 언어를 골라 등록해요. 한국어는 객관식 37문항과 실습 시나리오 3개, 3시간이에요. 실습은 연습용 계정을 받아 지시사항을 해내는 방식이에요. 떨어지면 8일 뒤 다시 볼 수 있어요.",
+    "preparation": "공식 시험 가이드의 평가 목표를 기준으로 Intermediate use of Google Workspace for Education Fundamentals 과정과 확인 퀴즈로 준비하세요. Level 2 task(2022년판)는 일부 화면이 바뀌었을 수 있어요. Slides 상호작용, Forms·Sheets 데이터, 소통 자동화를 연습 계정과 직접 해 보세요.",
+    "fee_text": "무료 (모든 응시 언어, 공식 FAQ 기준).",
+    "verification_date": "2026-10-10",
+    "official_links": ["https://support.google.com/googleforeducation/answer/16542372?hl=ko", "https://support.google.com/googleforeducation/answer/16542371?hl=ko", "https://services.google.com/fh/files/misc/en_level2_certified_educator_exam_guide.pdf", "https://services.google.com/fh/files/misc/en_google_educator_level2_basic_tasks.pdf", "https://edu.google.com/learning-center/"]
+  },
+  "trainer": {
+    "fee_text": "트레이너 역량 평가는 15달러로 안내돼 있어요(공식 한국어 페이지). 같은 페이지에 Level 1 10달러, Level 2 25달러라고 적혀 있지만, 공식 FAQ는 Level 1·2가 모든 언어에서 무료라고 안내해요. 등록 화면에서 최종 금액을 확인하세요.",
+    "process": "트레이너 과정(약 8시간) → 역량 평가(약 1시간) → Level 1·2 인증 → 2~3분 시연 영상과 최근 1년간 이끈 활동 3~5개 정리 → 지원서 제출(매월 심사, 접수 뒤 4~6주 안에 결과 안내)",
+    "verification_date": "2026-10-10"
+  }
+}

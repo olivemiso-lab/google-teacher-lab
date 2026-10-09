@@ -10,98 +10,95 @@
   }
   const m = C.missions[idx];
   const st = STAGES[m.track];
-  const fri = m.type === 'friday';
+  const label = { daily: '오늘의 실습', friday: '이번 주 실전', mock: '모의 시험' }[m.type];
   document.title = `${m.title} · ${S.name}`;
   const rec = () => store.mission(m.id);
-  const list = (arr, tag = 'ol', cls = 'steps') => `<${tag} class="${cls}">${arr.map((x) => `<li>${rich(x)}</li>`).join('')}</${tag}>`;
-  const block = (icon, title, inner, extra = '') => `<div class="card block"${extra}><h2>${icon} ${title}</h2>${inner}</div>`;
-
+  const block = (icon, title, inner) => `<div class="card block"><h2>${icon} ${title}</h2>${inner}</div>`;
   const prev = C.missions[idx - 1]?.track === m.track ? C.missions[idx - 1] : null;
   const next = C.missions[idx + 1]?.track === m.track ? C.missions[idx + 1] : null;
-  const report = `mailto:${S.email}?subject=${encodeURIComponent(`[화면이 달라요] ${m.id} ${m.title}`)}&body=${encodeURIComponent('어느 단계에서 무엇이 다른지 적어 주세요.\n(학생 이름 등 개인정보는 넣지 마세요)\n\n')}`;
+  const code = `${m.track === 'level1' ? 'L1' : 'L2'} ${m.week}주차 ${DAY[m.day]}`;
+  const video = (C.videos || {})[m.id];
+  const report = `mailto:${S.email}?subject=${encodeURIComponent(`[화면이 달라요] ${code} ${m.title}`)}&body=${encodeURIComponent('어느 지시사항에서 무엇이 다른지 적어 주세요.\n(학생 이름 등 개인정보는 넣지 마세요)\n\n')}`;
 
   body.innerHTML = `
     <p class="small"><a href="path.html?stage=${m.track}">← ${st.icon} ${st.name} 과정</a></p>
     <div class="m-head">
       <div class="m-meta">
         <span class="tag s-${m.track}">${st.icon} ${st.name}</span>
-        <span class="tag t-sun">${m.week}주차 ${DAY[m.day]}요일${fri ? ' · 이번 주 실전' : ''}</span>
-        <span class="tag" style="border:1px solid var(--line)">⏱ ${m.minutes || 5}분</span>
+        <span class="tag t-sun">${m.week}주차 ${DAY[m.day]}요일 · ${label}</span>
+        <span class="tag" style="border:1px solid var(--line)">⏱ ${m.minutes}분</span>
         ${m.tools.map((t) => `<span class="tag" style="border:1px solid var(--line)">${esc(t)}</span>`).join('')}
       </div>
       <h1 style="font-size:1.7rem">${esc(m.title)}</h1>
-      <p class="lead" style="font-size:1.02rem">${fri ? '<b>상황</b> · ' : ''}${esc(m.story)}</p>
-      <p class="tiny">${S.cohort} 달력으로는 ${fmt(missionDate(m))}에 하는 미션이에요. 언제 해도 괜찮아요.</p>
+      <p class="tiny">${S.cohort} 달력으로는 ${fmt(missionDate(m))} 미션이에요. 공식 평가 목표 ${esc(m.objectives.join(', '))}</p>
     </div>
 
-    ${block('☕', fri ? '해야 할 일' : '오늘의 5분', list(m.basic))}
-    ${m.solo ? `<p class="note green small">🙋 혼자 연습할 때 · ${esc(m.solo)}</p>` : ''}
-    ${block('✅', '완료 조건', `<div id="conds">${m.done.map((d, i) => `<label class="check" style="margin:6px 0"><input type="checkbox" data-c="${i}"><span>${rich(d)}</span></label>`).join('')}</div>
-      <p class="tiny" style="margin:8px 0 0">모두 체크하면 이 미션이 완료로 표시돼요.</p>`)}
-    ${m.advanced.length ? block('🚀', '조금 더 해보기 <span class="tiny">선택 · 10~20분</span>', list(m.advanced, 'ul', 'checks') + `<label class="check" style="margin-top:10px"><input type="checkbox" id="adv"><span>조금 더 해보기도 했어요</span></label>`) : ''}
-    ${fri ? block('📝', '한 줄 성찰', `<p class="muted small">다음 주 실제 수업이나 업무에서 이번 주 기능 중 무엇을 가장 먼저 써 보고 싶나요?</p>
-      <textarea id="reflect" maxlength="300" placeholder="예) 동학년 공유 폴더를 만들어 다음 주 자료를 같이 넣어 보고 싶어요"></textarea>
-      <p class="muted small" style="margin:14px 0 6px">결과물 링크 (선택)</p>
-      <input type="text" id="link" inputmode="url" placeholder="https://docs.google.com/..." maxlength="500">
-      <label class="check small" style="margin-top:8px"><input type="checkbox" id="privacy"><span>실제 학생 이름, 사진, 연락처, 성적 등 개인정보가 들어 있지 않은 것을 확인했어요.</span></label>
-      <div class="btns" style="margin-top:10px"><button class="btn small" id="save-note">저장</button><span class="tiny" id="note-msg" role="status"></span></div>
-      <p class="tiny" style="margin:8px 0 0">이 브라우저에만 저장돼요. 토요일 모임에서 보여 주고 싶을 때 꺼내 보세요.</p>`) : ''}
-    ${m.classroom ? block('🏫', '교실에서는 이렇게', `<p style="margin:0">${rich(m.classroom)}</p>`) : ''}
-    ${block('👤', '계정 조건', `<p style="margin:0">${rich(m.account)}</p>`)}
-    ${m.privacy ? `<p class="note warn small">🔐 ${esc(m.privacy)}</p>` : ''}
-    ${m.source ? block('📚', '공식 Google 자료', `<p style="margin:0"><a href="${esc(m.source.url)}" target="_blank" rel="noopener">${esc(m.source.title)} ↗</a></p><p class="tiny" style="margin:4px 0 0">마지막 확인 ${esc(m.checked || '-')}</p>`) : ''}
-    ${m.quiz ? block('🧠', '1분 체크', `<p style="font-weight:700">${esc(m.quiz.text)}</p><div id="quiz"></div><div id="quiz-res" role="status"></div>`) : ''}
-    <p class="note green small">💬 막히면 참여자 카톡 질문방에 물어보세요. <b>${m.track === 'level1' ? 'L1' : 'L2'} ${m.week}주차 ${DAY[m.day]}</b>처럼 미션 번호를 붙여 주면 답하기 쉬워요.</p>
+    <p class="note green small">👥 <b>연습 계정</b>과 함께 해요. 시험처럼 시크릿 창에 연습 계정을 열어 두고, 공유·초대·제출을 실제로 주고받아요. 이 페이지는 평소 창에서 열어야 진도가 남아요. <a href="start.html">처음이라면 연습 계정 만들기 →</a></p>
+
+    ${block('📋', '상황', `<p style="margin:0">${rich(m.scenario)}</p>`)}
+    ${block('✍️', '지시사항', `<p class="tiny" style="margin:-4px 0 8px">하나씩 끝낼 때마다 체크하세요.</p><div id="steps">${m.steps.map((s, i) => `<label class="check" style="margin:6px 0"><input type="checkbox" data-s="${i}"><span>${rich(s)}</span></label>`).join('')}</div>
+      ${m.type !== 'daily' ? `<div class="btns" style="margin-top:12px"><button class="btn small" id="timer">⏱ ${m.minutes}분 타이머 시작</button><span class="small" id="timer-out" role="timer"></span></div>` : ''}
+      ${video ? `<p style="margin:12px 0 0"><a class="btn small" href="${esc(video)}" target="_blank" rel="noopener">▶ 영상으로 보기</a></p>` : ''}`)}
+    ${m.tip ? `<p class="note small">💡 ${rich(m.tip)}</p>` : ''}
+    ${m.limit ? `<p class="note warn small">⚠️ ${rich(m.limit)}</p>` : ''}
+    ${block('✅', '스스로 점검', `<ul class="checks">${m.check.map((c) => `<li>${rich(c)}</li>`).join('')}</ul>`)}
+    ${block('🧠', '판단 문제 3개', `<p class="tiny" style="margin:-4px 0 8px">시험은 "상황에 맞는 올바른 방법"을 물어요. 문제마다 한 번만 답할 수 있어요.</p><div id="quiz"></div>`)}
+    ${m.source ? `<p class="small">📚 공식 자료: <a href="${esc(m.source.url)}" target="_blank" rel="noopener">${esc(m.source.title)} ↗</a></p>` : ''}
+    <p class="note green small">💬 막히면 카톡 질문방에 <b>${code}</b>처럼 미션 번호를 붙여 물어보세요.</p>
     <p class="small muted">🐞 지금 화면과 다른가요? <a href="${report}">운영자에게 알려 주기</a></p>
     <div class="pager">
       ${prev ? `<a class="btn small" href="mission.html?id=${prev.id}">← ${esc(prev.title)}</a>` : '<span></span>'}
       ${next ? `<a class="btn small" href="mission.html?id=${next.id}">${esc(next.title)} →</a>` : `<a class="btn small" href="path.html?stage=${m.track}">과정 목록 →</a>`}
     </div>`;
 
-  // 완료 조건 체크: 모두 체크하면 기본 완료
-  const conds = [...body.querySelectorAll('[data-c]')];
-  const saved = rec().conds || (rec().basic ? m.done.map(() => true) : []);
-  conds.forEach((el, i) => {
+  // 지시사항: 모두 체크하면 미션 완료
+  const boxes = [...body.querySelectorAll('[data-s]')];
+  const saved = rec().steps || [];
+  boxes.forEach((el, i) => {
     el.checked = !!saved[i];
     el.onchange = () => {
-      const now = conds.map((c) => c.checked);
+      const now = boxes.map((b) => b.checked);
       const all = now.every(Boolean);
-      store.setMission(m.id, { conds: now, basic: all, at: all ? (rec().at || new Date().toISOString()) : undefined });
+      store.setMission(m.id, { steps: now, basic: all, at: all ? (rec().at || new Date().toISOString()) : undefined });
     };
   });
-  const adv = document.getElementById('adv');
-  if (adv) { adv.checked = !!rec().advanced; adv.onchange = () => store.setMission(m.id, { advanced: adv.checked }); }
 
-  // 금요일 성찰·링크
-  const saveBtn = document.getElementById('save-note');
-  if (saveBtn) {
-    const r = rec();
-    const ref = document.getElementById('reflect'), link = document.getElementById('link'), pv = document.getElementById('privacy'), msg = document.getElementById('note-msg');
-    ref.value = r.reflection || ''; link.value = r.link || ''; pv.checked = !!r.link;
-    saveBtn.onclick = () => {
-      const url = link.value.trim();
-      if (url && !/^https:\/\/[^\s]+$/.test(url)) { msg.textContent = 'https:// 로 시작하는 주소를 넣어 주세요.'; return; }
-      if (url && !pv.checked) { msg.textContent = '링크를 저장하려면 개인정보 확인에 체크해 주세요.'; return; }
-      const ok = store.setMission(m.id, { reflection: ref.value.trim(), link: url });
-      msg.textContent = ok ? '저장했어요.' : '이 브라우저에서는 저장할 수 없어요. 내용을 따로 복사해 두세요.';
+  // 실전·모의: 카운트다운 (시험 감각 연습용, 끝나도 계속할 수 있음)
+  const tb = document.getElementById('timer');
+  if (tb) {
+    let end = 0, h = 0;
+    const out = document.getElementById('timer-out');
+    const tick = () => {
+      const left = Math.max(0, Math.round((end - Date.now()) / 1000));
+      out.textContent = left ? `남은 시간 ${Math.floor(left / 60)}:${String(left % 60).padStart(2, '0')}` : '시간이 다 됐어요. 남은 지시사항은 이어서 해 보세요.';
+      if (!left) { clearInterval(h); tb.textContent = '⏱ 다시 시작'; }
     };
+    tb.onclick = () => { clearInterval(h); end = Date.now() + m.minutes * 60e3; tb.textContent = '⏱ 처음부터'; tick(); h = setInterval(tick, 1000); };
   }
 
-  // 1분 체크: 미션당 한 번만 답한다
-  if (m.quiz) {
-    const qBox = document.getElementById('quiz'), res = document.getElementById('quiz-res');
-    const show = (picked) => {
-      qBox.querySelectorAll('button').forEach((b, i) => {
-        b.disabled = true;
-        if (i === m.quiz.answer) b.classList.add('right');
-        else if (i === picked) b.classList.add('wrong');
-      });
-      const right = picked === m.quiz.answer;
-      res.innerHTML = `<p class="note ${right ? 'green' : 'warn'} small" style="margin:8px 0 0"><b>${right ? '정답이에요.' : '다시 볼까요?'}</b> ${esc(m.quiz.explanation)}</p>`;
-    };
-    qBox.innerHTML = m.quiz.options.map((o, i) => `<button class="quiz-opt" data-i="${i}">${String.fromCharCode(9312 + i)} ${esc(o)}</button>`).join('');
-    const prevAns = store.get().quiz[m.id];
-    if (typeof prevAns === 'number') show(prevAns);
-    else qBox.querySelectorAll('button').forEach((b) => { b.onclick = () => { const i = +b.dataset.i; store.answer(m.id, i); show(i); }; });
-  }
+  // 판단 문제 3개: 문제마다 한 번만 답한다
+  const qBox = document.getElementById('quiz');
+  qBox.innerHTML = m.quiz.map((q, n) => `
+    <div class="qitem" style="margin:${n ? '18px' : '0'} 0 0">
+      <p style="font-weight:700;margin-bottom:4px">${n + 1}. ${rich(q.q)}</p>
+      <div>${q.options.map((o, i) => `<button class="quiz-opt" data-q="${n}" data-i="${i}">${String.fromCharCode(9312 + i)} ${rich(o)}</button>`).join('')}</div>
+      <div data-res="${n}" role="status"></div>
+    </div>`).join('');
+  const show = (n, picked) => {
+    const q = m.quiz[n];
+    qBox.querySelectorAll(`[data-q="${n}"]`).forEach((b) => {
+      const i = +b.dataset.i;
+      b.disabled = true;
+      if (i === q.answer) b.classList.add('right');
+      else if (i === picked) b.classList.add('wrong');
+    });
+    const right = picked === q.answer;
+    qBox.querySelector(`[data-res="${n}"]`).innerHTML = `<p class="note ${right ? 'green' : 'warn'} small" style="margin:6px 0 0"><b>${right ? '정답이에요.' : '다시 볼까요?'}</b> ${rich(q.why)}</p>`;
+  };
+  m.quiz.forEach((q, n) => {
+    const key = `${m.id}#${n}`;
+    const prevAns = store.get().quiz[key];
+    if (typeof prevAns === 'number') show(n, prevAns);
+    else qBox.querySelectorAll(`[data-q="${n}"]`).forEach((b) => { b.onclick = () => { const i = +b.dataset.i; store.answer(key, i); show(n, i); }; });
+  });
 })();

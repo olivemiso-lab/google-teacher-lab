@@ -77,8 +77,8 @@
     return `<div class="card${isDone(m.id) ? '' : ' is-now'}">
       <div class="m-meta"><span class="tag s-${m.track}">${s.icon} ${s.name}</span><span class="tag t-sun">${esc(label)}</span>${isDone(m.id) ? '<span class="tag s-level1">✓ 완료</span>' : ''}</div>
       <h3><a href="mission.html?id=${m.id}">${esc(m.title)}</a></h3>
-      <p class="muted small">${esc(m.story)}</p>
-      <a class="btn small" href="mission.html?id=${m.id}">${m.type === 'friday' ? '실전 시작' : '5분 시작'} →</a></div>`;
+      <p class="muted small">${esc(m.scenario)}</p>
+      <a class="btn small" href="mission.html?id=${m.id}">${m.type === 'daily' ? '실습 시작' : '실전 시작'} →</a></div>`;
   };
   const find = (t, w, d) => C.missions.find((m) => m.track === t && m.week === w && m.day === d);
 
@@ -92,7 +92,7 @@
     const d = now.dow;
     document.getElementById('today-title').textContent = `${now.week}주차 ${'월화수목금토일'[d - 1]}요일`;
     if (d <= 5) {
-      box.innerHTML = tracks.map((t) => card(find(t, now.week, d), d === 5 ? '이번 주 실전' : '오늘의 5분')).join('');
+      box.innerHTML = tracks.map((t) => card(find(t, now.week, d), d === 5 ? '이번 주 실전' : '오늘의 실습')).join('');
     } else {
       // 주말: 새 미션 없이 이번 주 실전 다시 보기 + 못 한 미션
       box.innerHTML = tracks.map((t) => {
