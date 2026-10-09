@@ -9,7 +9,9 @@
   const pill = document.getElementById('status-pill');
   const cta = document.getElementById('hero-cta');
   if (S.status === 'recruiting') {
-    pill.textContent = `${S.cohort} 모집 중 · ${fmt(S.recruitEnd)} 마감`;
+    pill.textContent = (S.full || []).length >= 3
+      ? `${S.cohort} 함께반 정원 마감 · 혼자 도전 신청 가능`
+      : `${S.cohort} 모집 중 · ${fmt(S.recruitEnd)} 마감`;
     cta.textContent = `${S.cohort} 신청하기`;
   } else if (S.status === 'running') {
     pill.textContent = now.phase === 'running' ? `${S.cohort} 진행 중 · ${now.week}주차` : `${S.cohort} 진행 중`;

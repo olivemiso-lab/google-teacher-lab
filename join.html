@@ -20,10 +20,21 @@
     <div class="btns" style="margin-top:14px" id="apply"></div>
   </div>
 
+  <section class="card" id="solo" style="margin-bottom:32px">
+    <h2 style="font-size:1.15rem" id="solo-title">정원이 차면 '혼자 도전'으로 함께해요</h2>
+    <p class="muted small" id="solo-full" hidden></p>
+    <div class="grid g2" style="margin-top:8px">
+      <div><b class="small">🙋 함께반 (정원 안)</b><ul class="checks small"><li>사이트 미션</li><li>카톡 질문방</li><li>토요일 밤 Meet 모임 · 짝</li></ul></div>
+      <div><b class="small">🧭 혼자 도전 (정원 밖)</b><ul class="checks small"><li>사이트 미션</li><li>카톡 질문방</li><li>다음 기수 모집 때 먼저 연락</li></ul></div>
+    </div>
+    <p class="tiny" style="margin:8px 0 0">함께반은 '토요일 밤 9시 참여 가능'에 예라고 답한 분 중 신청 순서대로 정해요. 중간에 자리가 나면 혼자 도전 신청 순서대로 연락드려요.</p>
+  </section>
+
   <section>
     <h2>신청서에서 여쭤보는 것</h2>
     <ul class="checks">
       <li>지금 내 단계 (Level 1 / Level 2 / Trainer)</li>
+      <li>함께반(토요일 모임 포함)과 혼자 도전 중 원하는 방식</li>
       <li>Google 도구를 쓰면서 가장 막막한 점 한 가지</li>
       <li id="ask-meet">토요일 밤 9시 모임 참여가 가능한지</li>
       <li>Meet 초대를 받을 이메일과 부를 이름(별명 가능)</li>
@@ -78,6 +89,17 @@
     apply.innerHTML = `<a class="btn primary" href="${esc(S.formUrl)}" target="_blank" rel="noopener">${S.cohort} 신청서 쓰기 ↗</a><span class="tiny">구글 설문지로 이동해요</span>`;
   } else {
     apply.innerHTML = `<a class="btn primary" href="${esc(S.threadsUrl)}" target="_blank" rel="noopener">스레드에서 소식 받기 ↗</a><span class="tiny">${S.status === 'recruiting' ? '신청서를 곧 열어요' : ''}</span>`;
+  }
+  const NAME = { level1: '🌱 Level 1반', level2: '🚀 Level 2반', trainer: '🎓 Trainer반' };
+  const full = (S.full || []).filter((k) => NAME[k]);
+  if (S.status === 'recruiting' && full.length) {
+    const all = full.length === 3;
+    pill.textContent = all ? `${S.cohort} 함께반 정원 마감 · 혼자 도전 신청 가능` : pill.textContent;
+    document.getElementById('solo').classList.add('is-now');
+    document.getElementById('solo-title').textContent = all ? '함께반은 정원이 찼어요. 혼자 도전으로 함께해요' : '일부 반은 정원이 찼어요';
+    const f = document.getElementById('solo-full');
+    f.textContent = `정원이 찬 반: ${full.map((k) => NAME[k]).join(', ')} · 신청서에서 '혼자 도전'을 골라 주세요.`;
+    f.hidden = false;
   }
   document.getElementById('ask-meet').textContent = `${meetAt} 모임 참여가 가능한지`;
   const mail = document.getElementById('mail'); mail.href = 'mailto:' + S.email; mail.textContent = S.email;
