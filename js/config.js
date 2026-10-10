@@ -17,7 +17,7 @@ window.SITE = {
   capacity: 'Trainer반 8명 · Level 1·2반 각 10명 내외', // 비우면 표시 안 함
   // 정원이 찬 반을 넣으면 신청 페이지에 '혼자 도전' 안내가 강조돼요. 예: ['trainer'] / 모두 차면 ['level1', 'level2', 'trainer']
   full: [],
-  formUrl: '',                  // 구글 설문지 신청 링크. 비우면 '준비 중'으로 표시
+  formUrl: 'https://forms.gle/iXYuCoBNzi985Rve9', // 구글 설문지 신청 링크. 비우면 '준비 중'으로 표시
   threadsUrl: 'https://www.threads.com/@olivece2017',
   email: 'ggteacherlab@gmail.com',
   leader: {
