@@ -31,13 +31,18 @@ for (const m of missions) {
   m.quiz.forEach((q, i) => {
     if (!q.q || !q.why || q.options?.length !== 4 || !Number.isInteger(q.answer) || !q.options[q.answer]) fail(m.id, `문제 ${i + 1}`);
   });
+  if (m.material && (!['text', 'table'].includes(m.material.kind) || !m.material.title || !m.material.body)) fail(m.id, 'material 형식');
+  if (m.material?.kind === 'table') {
+    const cols = m.material.body.trim().split('\n').map((r) => r.split('\t').length);
+    if (cols.some((c) => c !== cols[0])) fail(m.id, 'material 표의 칸 수가 줄마다 달라요');
+  }
   m.tip = m.tip || ''; m.limit = m.limit || ''; m.source = m.source || null;
 }
 missions.sort((a, b) => a.id.localeCompare(b.id, 'en', { numeric: true }));
 
 const weeks = {
-  level1: ['Drive와 Docs 공유·권한', 'Classroom 과제와 피드백', 'Gmail·Chat·Meet로 소통', 'Calendar와 Sites', 'Slides와 Forms', 'Sheets·접근성·모의 시험'],
-  level2: ['업무를 더 빠르게', '학교 공동체와 소통 자동화', '자료와 결과물 연결', '참여하는 수업', '학생에게 맞춘 수업', '평가와 데이터·모의 시험'],
+  level1: ['Drive와 Docs 공유·권한', 'Classroom 과제와 피드백', 'Gmail·Chat·Meet로 소통', 'Calendar와 Sites', 'Slides와 Forms', 'Sheets·접근성·실습 모의 연습'],
+  level2: ['Docs 심화', 'Forms 심화', 'Slides로 참여하는 수업', 'Classroom 심화 1', 'Classroom 심화 2와 Calendar', 'Sheets·Sites·Gmail·Meet·실습 모의 연습'],
 };
 const guides = live.guides.map((g) => Object.assign({}, g, guideFix[g.slug] || {}));
 const content = { builtFrom: '2026-10-10', weeks, missions, trainer, guides, news: live.news, videos };

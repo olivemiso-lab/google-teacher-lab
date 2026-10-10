@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>내 기록 · Google Teacher Lab</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232f6b4f'/%3E%3Ctext x='16' y='23' font-size='18' font-family='Arial' font-weight='900' text-anchor='middle' fill='%23fff'%3EG%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="top" id="top"></header>
+<main class="wrap narrow" id="body"></main>
+<footer class="foot" id="foot"></footer>
+<script src="js/config.js"></script>
+<script src="data/content.js"></script>
+<script src="js/common.js"></script>
+<script>
+(function () {
+  const { C, STAGES, DOMAINS, esc, store, isDone, progress, stats, reviewQueue, cohortNow, header } = window.GTL;
+  header('index.html');
+  const body = document.getElementById('body');
+  let track = new URLSearchParams(location.search).get('stage');
+  if (!['level1', 'level2'].includes(track)) track = store.get().stage === 'level2' ? 'level2' : 'level1';
+  const p = progress(track), s = stats(track), now = cohortNow();
+  const ex = store.get().exams.filter((e) => e.track === track).slice(-8).reverse();
+  const days = ['월', '화', '수', '목', '금'];
+  body.innerHTML = `
+    <h1 style="font-size:1.8rem">내 기록</h1>
+    <nav class="tabs" aria-label="단계">${['level1', 'level2'].map((k) => `<a href="?stage=${k}" aria-current="${k === track}">${STAGES[k].icon} ${STAGES[k].name}</a>`).join('')}</nav>
+    <div class="tiles">
+      <div class="tile"><div class="k">완료한 미션</div><div class="v">${p.done}<small>/ ${p.total}</small></div><div class="s">${p.pct}%</div></div>
+      <div class="tile"><div class="k">판단 문제 정답률</div><div class="v">${s.answered ? s.pct + '%' : '–'}</div><div class="s">첫 시도 ${s.right}/${s.answered}</div></div>
+      <a class="tile" href="review.html?stage=${track}"><div class="k">복습할 문제</div><div class="v">${reviewQueue(track).length}</div><div class="s">복습함 열기 →</div></a>
+      <a class="tile" href="exam.html?stage=${track}"><div class="k">모의고사</div><div class="v">${ex.length ? Math.round((ex[0].right / ex[0].n) * 100) + '%' : '–'}</div><div class="s">${ex.length ? '최근 결과' : '아직 안 봤어요'}</div></a>
+    </div>
+
+    <div class="card" style="margin-top:16px"><h2 style="font-size:1.05rem">주차별 미션</h2>
+      <div class="weekdots" style="margin-bottom:4px"><span></span>${days.map((d) => `<span class="tiny" style="text-align:center">${d}</span>`).join('')}</div>
+      ${C.weeks[track].map((t, i) => `<div class="weekdots" style="margin:6px 0"><span class="tiny">${i + 1}주차</span>${C.missions.filter((m) => m.track === track && m.week === i + 1).map((m) => `<a href="mission.html?id=${m.id}" title="${esc(m.title)}" class="${isDone(m.id) ? 'done' : ''}${now.phase === 'running' && now.week === i + 1 && now.dow === m.day ? ' now' : ''}" aria-label="${i + 1}주차 ${days[m.day - 1]} ${esc(m.title)}${isDone(m.id) ? ' 완료' : ''}"></a>`).join('')}</div>`).join('')}
+      <p class="tiny" style="margin:8px 0 0">초록 = 실습 완료 · 노란 테두리 = 오늘</p></div>
+
+    <div class="card" style="margin-top:16px"><h2 style="font-size:1.05rem">영역별 정답률 (첫 시도)</h2>
+      ${s.byDomain.length ? s.byDomain.sort((a, b) => a.k - b.k).map((d) => `<div class="hbar"><span>${esc(DOMAINS[track][d.k] || '기타')}</span><div class="bar"><i class="${d.pct < 70 ? 'low' : ''}" style="width:${d.pct}%"></i></div><b>${d.pct}%</b></div>`).join('') : '<p class="muted small">판단 문제를 풀면 공식 평가 영역별로 정답률을 보여 줘요.</p>'}
+    </div>
+
+    ${ex.length ? `<div class="card" style="margin-top:16px"><h2 style="font-size:1.05rem">모의고사 기록</h2><ul class="checks small">${ex.map((e) => `<li>${esc(e.date)} · ${e.right}/${e.n} (${Math.round((e.right / e.n) * 100)}%) · ${e.used}분</li>`).join('')}</ul></div>` : ''}
+
+    <div class="card" style="margin-top:16px"><h2 style="font-size:1.05rem">기록 백업</h2>
+      <p class="muted small">기록은 이 브라우저에만 있어요. 다른 기기로 옮기거나 브라우저를 정리하기 전에 백업 파일을 저장하세요.</p>
+      <div class="btns"><button class="btn small" id="exp">⬇ 백업 파일 저장</button><label class="btn small" style="cursor:pointer">⬆ 백업 불러오기<input type="file" id="imp" accept=".json,application/json" hidden></label><button class="btn small" id="rst">기록 지우기</button></div>
+      <p class="small" id="msg" role="status" style="margin:8px 0 0"></p></div>`;
+  const msg = document.getElementById('msg');
+  document.getElementById('exp').onclick = () => {
+    const blob = new Blob([store.exportText()], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = `google-teacher-lab-기록-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a); a.click(); a.remove();
+    msg.textContent = '백업 파일을 저장했어요.';
+  };
+  document.getElementById('imp').onchange = async (e) => {
+    const f = e.target.files[0]; if (!f) return;
+    try { store.importText(await f.text()); msg.textContent = '불러왔어요. 화면을 새로 고칠게요.'; setTimeout(() => location.reload(), 700); }
+    catch (err) { msg.textContent = '불러오지 못했어요: ' + err.message; }
+  };
+  document.getElementById('rst').onclick = () => {
+    if (!confirm('이 브라우저의 학습 기록을 모두 지울까요? 되돌릴 수 없어요.')) return;
+    store.reset(); location.reload();
+  };
+})();
+</script>
+</body>
+</html>

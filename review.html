@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>복습 · Google Teacher Lab</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232f6b4f'/%3E%3Ctext x='16' y='23' font-size='18' font-family='Arial' font-weight='900' text-anchor='middle' fill='%23fff'%3EG%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="top" id="top"></header>
+<main class="wrap narrow" id="body"></main>
+<footer class="foot" id="foot"></footer>
+<script src="js/config.js"></script>
+<script src="data/content.js"></script>
+<script src="js/common.js"></script>
+<script>
+(function () {
+  const { STAGES, esc, rich, store, reviewQueue, weakSkills, header } = window.GTL;
+  header('review.html');
+  const body = document.getElementById('body');
+  let track = new URLSearchParams(location.search).get('stage');
+  if (!['level1', 'level2'].includes(track)) track = store.get().stage === 'level2' ? 'level2' : 'level1';
+  let queue = [], i = 0;
+
+  function list() {
+    queue = reviewQueue(track);
+    const weak = weakSkills(track, 5);
+    const bySkill = {};
+    for (const x of queue) (bySkill[x.skill] = bySkill[x.skill] || []).push(x);
+    body.innerHTML = `
+      <h1 style="font-size:1.8rem">복습함</h1>
+      <p class="muted">틀렸던 판단 문제를 모아 다시 풀어요. 연속 두 번 맞히면 복습함에서 빠져요.</p>
+      <nav class="tabs" aria-label="단계">${['level1', 'level2'].map((k) => `<a href="?stage=${k}" aria-current="${k === track}">${STAGES[k].icon} ${STAGES[k].name}</a>`).join('')}</nav>
+      ${queue.length ? `
+        <div class="card" style="margin-bottom:16px;text-align:center">
+          <p style="font-size:2.2rem;font-weight:900;color:var(--green);margin:0">${queue.length}</p>
+          <p class="muted" style="margin:0 0 12px">다시 풀 문제</p>
+          <button class="btn primary" id="startq">🔁 복습 시작</button>
+        </div>
+        ${weak.length ? `<div class="card" style="margin-bottom:16px"><h2 style="font-size:1.05rem">다시 볼 개념</h2><ul class="chiplist">${weak.map((s) => `<li><span>${esc(s.k)} · ${s.pct}%</span></li>`).join('')}</ul><p class="tiny" style="margin:8px 0 0">첫 시도 정답률이 70%보다 낮은 개념이에요.</p></div>` : ''}
+        <div class="card"><h2 style="font-size:1.05rem">개념별로 보기</h2>
+          ${Object.entries(bySkill).map(([k, xs]) => `<p style="margin:10px 0 4px"><b>${esc(k)}</b> <span class="tiny">${xs.length}문제</span></p><ul class="checks small">${xs.map((x) => `<li><a href="mission.html?id=${x.m.id}#quiz">${esc(x.m.title)}</a> · 문제 ${x.n + 1}</li>`).join('')}</ul>`).join('')}
+        </div>`
+      : `<div class="card" style="text-align:center"><p style="font-size:2rem;margin:0">🎉</p><p><b>복습할 문제가 없어요.</b></p><p class="muted small">미션의 판단 문제를 풀다가 틀린 문제가 여기에 모여요.</p><a class="btn primary" href="index.html">학습실로</a></div>`}`;
+    const s = document.getElementById('startq'); if (s) s.onclick = () => { i = 0; play(); };
+  }
+
+  function play() {
+    if (i >= queue.length) { list(); return; }
+    const x = queue[i], q = x.q;
+    body.innerHTML = `<p class="small"><a href="review.html?stage=${track}">← 복습함</a></p>
+      <div class="card qcard">
+        <p class="qnum">복습 ${i + 1} / ${queue.length}<span class="tag t-sun skill">${esc(x.skill)}</span></p>
+        <p class="tiny" style="margin:0 0 6px">${esc(x.m.title)}</p>
+        <p style="font-weight:700;font-size:1.05rem">${rich(q.q)}</p>
+        <div>${q.options.map((o, k) => `<button class="quiz-opt" data-i="${k}">${String.fromCharCode(9312 + k)} ${rich(o)}</button>`).join('')}</div>
+        <div id="qres" role="status"></div>
+      </div>`;
+    const opts = [...body.querySelectorAll('.quiz-opt')];
+    opts.forEach((b) => b.onclick = () => {
+      const k = +b.dataset.i, right = k === q.answer;
+      const r = store.answer(x.key, k, right);
+      opts.forEach((o) => { const j = +o.dataset.i; o.disabled = true; if (j === q.answer) o.classList.add('right'); else if (j === k) o.classList.add('wrong'); });
+      const cleared = r.streak >= 2;
+      body.querySelector('#qres').innerHTML = `<p class="note ${right ? 'green' : 'warn'} small" style="margin:8px 0 0"><b>${right ? (cleared ? '정답! 이 문제는 복습함에서 빠져요.' : '정답이에요. 한 번 더 맞히면 복습 완료!') : '다시 볼까요?'}</b> ${rich(q.why)}</p>
+        <div class="btns" style="margin-top:10px"><button class="btn primary small" id="nx">${i + 1 < queue.length ? '다음 문제 →' : '복습 마치기'}</button></div>`;
+      body.querySelector('#nx').onclick = () => { i += 1; play(); };
+    });
+  }
+  list();
+})();
+</script>
+</body>
+</html>

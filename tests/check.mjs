@@ -42,5 +42,19 @@ ok(cohortNow(addDays(S.start, 42)).levelDone === true, '6주 뒤 Level 끝');
 ok(missionDate(C.missions.find((m) => m.id === 'l1-1-5')) === addDays(S.start, 4), '1주차 금요일 미션 = 시작 4일 뒤');
 ok(fmt('2026-11-09') === '11월 9일 (월)', '날짜 표기');
 
+// 학습 기록·분석
+const G = ctx.window.GTL;
+ok(G.questions('level1').length === 90 && G.questions('level2').length === 90, '레벨마다 문제 은행 90문항');
+ok(C.missions.every((m) => G.DOMAINS[m.track][G.domainOf(m)]), '모든 미션이 공식 평가 영역에 연결됨');
+const m0 = C.missions[0], k0 = G.qKey(m0, 0), wrong = (m0.quiz[0].answer + 1) % 4;
+G.store.answer(k0, wrong, false);
+ok(G.reviewQueue('level1').some((x) => x.key === k0), '틀린 문제는 복습함에 들어감');
+G.store.answer(k0, m0.quiz[0].answer, true); G.store.answer(k0, m0.quiz[0].answer, true);
+ok(!G.reviewQueue('level1').some((x) => x.key === k0), '연속 두 번 맞히면 복습함에서 빠짐');
+ok(G.store.rec(k0).firstRight === false && G.stats('level1').answered === 1, '첫 시도 기록은 그대로 남음');
+const back = G.store.exportText(); G.store.reset(); G.store.importText(back);
+ok(G.store.rec(k0) && G.store.rec(k0).n === 3, '백업 파일로 기록 복원');
+ok(G.nextMeeting('2026-10-12') === '2026-10-17' && G.nextMeeting('2026-10-17') === '2026-10-17' && G.nextMeeting('2026-10-18') === '2026-10-24', '다음 토요일 모임 계산');
+
 console.log(fail ? `\n${fail}개 실패` : '\n모두 통과');
 process.exit(fail ? 1 : 0);

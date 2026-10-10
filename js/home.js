@@ -1,5 +1,8 @@
 (function () {
-  const { S, C, STAGES, esc, fmt, fmtShort, kstToday, cohortNow, addDays, store, isDone, progress, header } = window.GTL;
+  const { S, C, STAGES, esc, fmt, fmtShort, kstToday, cohortNow, addDays, daysBetween, nextMeeting, store, isDone, progress, stats, reviewQueue, weakSkills, nextMission, header } = window.GTL;
+  // ?pick=level1 처럼 들어오면 단계를 정하고 학습실을 연다
+  const pick = new URLSearchParams(location.search).get('pick');
+  if (pick && STAGES[pick]) { store.setStage(pick); history.replaceState(null, '', 'index.html'); }
   header('index.html');
   const today = kstToday();
   const now = cohortNow(today);
@@ -29,19 +32,20 @@
   // 단계 카드
   const mine = store.get().stage;
   const detail = {
-    level1: ['평일 5분 미션 6주', '금요일 실전 미션', '토요일 모임에서 막힌 곳 풀기'],
-    level2: ['도구를 연결하는 미션 6주', '금요일 실전 미션', '첫 미니 연수 해 보기'],
+    level1: ['연습 계정으로 실습하는 미션 30개', '판단 문제 90개 · 모의고사', '토요일 모임에서 막힌 곳 풀기'],
+    level2: ['2025년판 task card 기준 심화 미션 30개', '판단 문제 90개 · 모의고사', '미니 연수 참가자로 함께하기'],
     trainer: ['트레이너 과정·역량 평가', '2~3분 시연 영상', '활동 3~5개 정리, 지원서'],
   };
   const goal = { level1: '🏁 Level 1 시험 응시', level2: '🏁 Level 2 시험 응시', trainer: '🏁 트레이너 지원서 제출' };
   const weeks = { level1: S.levelWeeks, level2: S.levelWeeks, trainer: S.trainerWeeks };
   document.getElementById('stages').innerHTML = Object.entries(STAGES).map(([k, s], i) => `
-    <a class="card step${mine === k ? ' mine' : ''}" href="path.html?stage=${k}">
+    <a class="card step${mine === k ? ' mine' : ''}" href="?pick=${k}" aria-label="${s.name}로 학습실 열기">
       <span><span class="tag s-${k}">${s.icon} ${i + 1}단계 · ${weeks[k]}주</span>${mine === k ? ' <span class="tag t-sun">내 단계</span>' : ''}</span>
       <h3 style="margin:6px 0 0">${s.name}</h3>
       <span class="who">${esc(s.who)}</span>
       <ul>${detail[k].map((d) => `<li>${esc(d)}</li>`).join('')}</ul>
       <span class="goal">${goal[k]}</span>
+      <span class="btn small" style="align-self:flex-start;margin-top:10px">${mine === k ? '내 학습실 열기 →' : '이 단계로 시작 →'}</span>
     </a>`).join('');
 
   // 함께 걷는 사람
@@ -59,7 +63,7 @@
   const rows = [
     [S.recruitEnd, '모집 마감'],
     [S.orientation, `${otFirst ? '첫 토요일 모임 · 오리엔테이션' : '오리엔테이션'} · ${S.meeting.time.split(' ~')[0]} · 2~3명씩 짝 정하기`],
-    [S.start, '1주차 시작 · 첫 5분 미션이 열려요'],
+    [S.start, '1주차 시작 · 첫 미션이 열려요'],
     ...(otFirst ? [] : [[sat(1), '첫 토요일 모임']]),
     [sat(S.levelWeeks), `Level 1·2반 마지막 모임 · ${S.levelWeeks}주 마무리`],
     [sat(S.trainerWeeks), `Trainer반 마지막 모임 · 지원서 서로 읽기`],
@@ -107,4 +111,75 @@
     }
     sec.hidden = false;
   }
+})();
+
+// ── 내 학습실: 단계를 고른 사람에게 가장 먼저 보여 주는 화면
+(function () {
+  const { S, C, STAGES, esc, fmt, kstToday, cohortNow, daysBetween, nextMeeting, store, isDone, progress, stats, reviewQueue, weakSkills, nextMission } = window.GTL;
+  const stage = store.get().stage;
+  if (!stage) return;
+  const dash = document.getElementById('dash');
+  const today = kstToday();
+  const now = cohortNow(today);
+  const meet = nextMeeting(today);
+  const dday = daysBetween(today, meet);
+  const meetText = dday === 0 ? '오늘 밤 9시' : `${fmt(meet)} 밤 9시 · D-${dday}`;
+  const where = now.phase === 'before' ? `${S.cohort} 시작까지 ${now.daysLeft}일` : now.levelDone && stage !== 'trainer' ? '과정을 모두 마쳤어요 · 자유 복습' : `${now.week}주차 ${'월화수목금토일'[now.dow - 1]}요일`;
+  document.getElementById('landing-hero').hidden = true;
+  document.getElementById('today-sec').hidden = true;
+  document.getElementById('pick-title').textContent = '단계 바꾸기';
+
+  if (stage === 'trainer') {
+    const done = C.trainer.filter((_, i) => store.get().notes['road-' + (i + 1)]).length;
+    const nextStep = C.trainer.find((_, i) => !store.get().notes['road-' + (i + 1)]);
+    dash.innerHTML = `
+      <div class="dash-hero"><div>
+        <span class="tag" style="background:rgba(255,255,255,.18);color:#fff">🎓 Trainer · ${esc(where)}</span>
+        <h1>${nextStep ? esc(nextStep.title.split('·')[0].trim()) + ' 단계예요' : '로드맵을 모두 체크했어요'}</h1>
+        <p>공식 로드맵 8단계 중 ${done}단계를 마쳤어요.</p>
+        <div class="btns" style="margin-top:14px"><a class="btn" href="path.html?stage=trainer">로드맵 이어가기 →</a><a class="btn ghost" href="kit.html">준비 양식</a></div>
+      </div><div class="ring" style="--p:${Math.round((done / 8) * 100)}"><b>${done}/8<small>로드맵</small></b></div></div>
+      <div class="tiles" style="margin-top:14px">
+        <div class="tile"><div class="k">다음 모임</div><div class="v" style="font-size:1.15rem">${esc(meetText)}</div><div class="s">Google Meet</div></div>
+        <a class="tile" href="kit.html#plan"><div class="k">미니 연수 계획서</div><div class="v" style="font-size:1.15rem">양식 열기</div><div class="s">2주차까지</div></a>
+        <a class="tile" href="kit.html#video"><div class="k">시연 영상</div><div class="v" style="font-size:1.15rem">2~3분</div><div class="s">체크리스트 →</div></a>
+      </div>
+      <p class="small" style="margin:12px 0 0"><a href="start.html">시작 준비</a> · <a href="resources.html#g-trainer">트레이너 공식 요건</a></p>`;
+    dash.hidden = false;
+    return;
+  }
+
+  const p = progress(stage), s = stats(stage), q = reviewQueue(stage), weak = weakSkills(stage);
+  const nm = nextMission(stage);
+  const wk = now.phase === 'running' && !now.levelDone ? now.week : (nm ? nm.week : 1);
+  const weekList = C.missions.filter((m) => m.track === stage && m.week === wk);
+  const weekDone = weekList.filter((m) => isDone(m.id)).length;
+  const first = !Object.keys(store.get().missions).length && !s.answered;
+  dash.innerHTML = `
+    <div class="dash-hero"><div>
+      <span class="tag" style="background:rgba(255,255,255,.18);color:#fff">${STAGES[stage].icon} ${STAGES[stage].name} · ${esc(where)}</span>
+      <h1>${first ? '첫 미션부터 시작해 볼까요?' : nm ? '이어서 학습해요' : '미션 30개를 모두 마쳤어요 🎉'}</h1>
+      <p>${nm ? `${nm.week}주차 ${'월화수목금'[nm.day - 1]} · ${esc(nm.title)}` : '모의고사와 복습으로 마무리해요.'}</p>
+      <div class="btns" style="margin-top:14px">
+        ${nm ? `<a class="btn" href="mission.html?id=${nm.id}">▶ ${first ? '시작하기' : '이어서 학습하기'}</a>` : `<a class="btn" href="exam.html?stage=${stage}">📝 모의고사 보기</a>`}
+        ${q.length ? `<a class="btn ghost" href="review.html?stage=${stage}">🔁 복습 ${q.length}문제</a>` : ''}
+        ${first ? '<a class="btn ghost" href="start.html">연습 계정 준비 →</a>' : ''}
+      </div>
+    </div><div class="ring" style="--p:${p.pct}"><b>${p.pct}%<small>${p.done}/${p.total} 미션</small></b></div></div>
+
+    <div class="tiles" style="margin-top:14px">
+      <div class="tile"><div class="k">${wk}주차 진행</div><div class="v">${weekDone}<small>/ ${weekList.length}</small></div><div class="s">${esc(C.weeks[stage][wk - 1])}</div></div>
+      <div class="tile"><div class="k">판단 문제 정답률</div><div class="v">${s.answered ? s.pct + '%' : '–'}</div><div class="s">${s.answered ? `첫 시도 ${s.right}/${s.answered}` : '미션에서 풀어 보세요'}</div></div>
+      <a class="tile" href="review.html?stage=${stage}"><div class="k">복습할 문제</div><div class="v">${q.length}</div><div class="s">${q.length ? '복습함 열기 →' : '틀린 문제가 모여요'}</div></a>
+      <div class="tile"><div class="k">다음 모임</div><div class="v" style="font-size:1.15rem">${esc(meetText)}</div><div class="s">Google Meet</div></div>
+    </div>
+
+    <div class="grid g2" style="margin-top:14px">
+      <div class="card"><h2 style="font-size:1.05rem">${wk}주차 미션</h2>
+        <ul class="mlist">${weekList.map((m) => `<li class="${m.type === 'daily' ? '' : 'fri'}"><a href="mission.html?id=${m.id}"><span class="d">${'월화수목금'[m.day - 1]}</span><span class="t">${esc(m.title)}</span><span class="m">${isDone(m.id) ? '<span class="ok">✓</span>' : m.minutes + '분'}</span></a></li>`).join('')}</ul></div>
+      <div class="card"><h2 style="font-size:1.05rem">다시 볼 개념</h2>
+        ${weak.length ? `<ul class="chiplist">${weak.map((w) => `<li><a href="review.html?stage=${stage}">${esc(w.k)} · ${w.pct}%</a></li>`).join('')}</ul><p class="tiny" style="margin:8px 0 0">첫 시도 정답률이 70%보다 낮은 개념이에요.</p>` : `<p class="muted small" style="margin:0">판단 문제를 풀수록 여기에 약한 개념이 보여요. 지금은 걱정할 개념이 없어요.</p>`}
+        <p class="small" style="margin:14px 0 0"><a href="my.html?stage=${stage}">📊 내 기록 전체 보기</a> · <a href="exam.html?stage=${stage}">📝 모의고사</a></p></div>
+    </div>`;
+  dash.hidden = false;
 })();

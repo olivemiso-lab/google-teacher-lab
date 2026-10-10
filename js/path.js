@@ -15,7 +15,7 @@
     const mine = store.get().stage === stage;
     return mine
       ? '<span class="tag t-sun">내 단계로 정해져 있어요</span>'
-      : `<button class="btn small" id="pick">${STAGES[stage].icon} 이 단계로 정하기</button>`;
+      : `<button class="btn small" id="pick" title="학습실에 이 단계를 보여 줘요. 스터디 신청과는 별개예요.">${STAGES[stage].icon} 내 학습실 단계로 정하기</button>`;
   }
   function bindPick() {
     const b = document.getElementById('pick');

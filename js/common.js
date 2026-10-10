@@ -1,4 +1,4 @@
-// 모든 페이지가 같이 쓰는 도구: 머리말·꼬리말, 한국 날짜, 기수 달력, 내 기록(브라우저 저장).
+// 모든 페이지가 같이 쓰는 도구: 머리말·탭, 한국 날짜, 기수 달력, 내 학습 기록(브라우저 저장)과 분석.
 (function () {
   const S = window.SITE;
   const C = window.CONTENT;
@@ -7,6 +7,11 @@
     level1: { icon: '🌱', name: 'Level 1', who: 'Google 인증이 아직 없어요' },
     level2: { icon: '🚀', name: 'Level 2', who: 'Level 1이 있어요' },
     trainer: { icon: '🎓', name: 'Trainer', who: 'Level 1·2가 있거나 거의 다 왔어요' },
+  };
+  // 공식 시험 가이드의 영역 (평가 목표 번호의 앞자리)
+  const DOMAINS = {
+    level1: { 1: '만들기', 2: '공유', 3: '소통', 4: '협업', 5: '정리' },
+    level2: { 1: '만들기', 2: '소통', 3: '협업', 4: '정리' },
   };
   const DAY = ['', '월', '화', '수', '목', '금', '토', '일'];
 
@@ -34,19 +39,43 @@
     return { phase: 'running', week, dow, levelDone: week > S.levelWeeks, trainerDone: week > S.trainerWeeks };
   }
   const missionDate = (m) => addDays(S.start, (m.week - 1) * 7 + (m.day - 1));
+  // 다음 토요일 모임 (오늘이 토요일이면 오늘)
+  function nextMeeting(today = kstToday()) {
+    const first = addDays(S.start, 5);
+    if (today <= first) return first;
+    const d = daysBetween(first, today) % 7;
+    return d === 0 ? today : addDays(today, 7 - d);
+  }
 
-  // 내 기록: 이 브라우저에만 저장된다. 저장소가 막혀 있어도 화면은 그대로 동작한다.
-  const KEY = 'gtl.v2'; // v2: 미션 형식이 바뀌어 예전 기록과 섞이지 않게
-  let mem = { stage: '', missions: {}, quiz: {}, notes: {} };
-  try { const raw = localStorage.getItem(KEY); if (raw) mem = Object.assign(mem, JSON.parse(raw)); } catch (e) { /* 저장 불가 환경 */ }
+  // ── 내 기록: 이 브라우저에만 저장된다. 저장소가 막혀 있어도 화면은 그대로 동작한다.
+  const KEY = 'gtl.v3'; // v3: 문제마다 첫 시도·다시 풀기 기록
+  const blank = () => ({ stage: '', missions: {}, answers: {}, notes: {}, exams: [] });
+  let mem = blank();
+  try { const raw = localStorage.getItem(KEY); if (raw) mem = Object.assign(blank(), JSON.parse(raw)); } catch (e) { /* 저장 불가 환경 */ }
   const store = {
     get: () => mem,
     save() { try { localStorage.setItem(KEY, JSON.stringify(mem)); return true; } catch (e) { return false; } },
     setStage(s) { mem.stage = STAGES[s] ? s : ''; return store.save(); },
     mission: (id) => mem.missions[id] || {},
     setMission(id, patch) { mem.missions[id] = Object.assign({}, mem.missions[id], patch); return store.save(); },
-    answer(id, i) { if (id in mem.quiz) return false; mem.quiz[id] = i; store.save(); return true; },
     setNote(key, text) { if (text) mem.notes[key] = text; else delete mem.notes[key]; return store.save(); },
+    // 문제 풀이 기록: 첫 시도는 그대로 남기고, 다시 풀 때마다 연속 정답(streak)을 센다.
+    answer(key, i, right) {
+      const r = mem.answers[key] || { first: i, firstRight: right, n: 0, streak: 0, wrongEver: false };
+      r.n += 1; r.last = i; r.lastRight = right; r.at = Date.now();
+      r.streak = right ? (r.streak || 0) + 1 : 0;
+      if (!right) r.wrongEver = true;
+      mem.answers[key] = r; store.save(); return r;
+    },
+    rec: (key) => mem.answers[key],
+    addExam(x) { mem.exams.push(x); mem.exams = mem.exams.slice(-20); return store.save(); },
+    exportText: () => JSON.stringify({ app: 'google-teacher-lab', v: 3, savedAt: new Date().toISOString(), data: mem }),
+    importText(txt) {
+      const o = JSON.parse(txt);
+      if (!o || o.app !== 'google-teacher-lab' || !o.data) throw new Error('이 앱의 백업 파일이 아니에요.');
+      mem = Object.assign(blank(), o.data); return store.save();
+    },
+    reset() { mem = blank(); return store.save(); },
   };
   const isDone = (id) => !!store.mission(id).basic;
   function progress(track, upToWeek = 99) {
@@ -55,22 +84,64 @@
     return { done, total: list.length, pct: list.length ? Math.round((done / list.length) * 100) : 0 };
   }
 
-  function header(current) {
-    const items = [
-      ['index.html', '함께 준비하기'],
-      ['start.html', '시작 준비'],
-      ['path.html', '단계별 과정'],
-      ['resources.html', '준비 자료'],
-    ];
-    const nav = items.map(([href, label]) => `<a href="${href}"${current === href ? ' aria-current="page"' : ''}>${label}</a>`).join('');
-    const cta = `<a class="cta" href="join.html"${current === 'join.html' ? ' aria-current="page"' : ''}>${S.status === 'recruiting' ? S.cohort + ' 신청하기' : '참여 안내'}</a>`;
-    document.getElementById('top').innerHTML = `<div class="wrap">
-      <a class="brand" href="index.html"><b>${esc(S.name)}</b><span>${esc(S.subtitle)}</span></a>
-      <nav class="nav" aria-label="주 메뉴">${nav}${cta}</nav></div>`;
-    document.getElementById('foot').innerHTML = `<div class="wrap">
-      <p>${esc(S.name)}는 Google과 관계없는 교사들의 독립 스터디입니다. 인증 시험 형식·비용·절차는 바뀔 수 있으니 응시 전에 꼭 공식 페이지에서 확인하세요. 실제 시험 문항은 다루지 않습니다.</p>
-      <p>진도와 메모는 이 브라우저에만 저장되고 운영자에게 전송되지 않습니다. · 문의 <a href="mailto:${esc(S.email)}">${esc(S.email)}</a> · <a href="${esc(S.threadsUrl)}" rel="noopener" target="_blank">스레드</a></p></div>`;
+  // ── 분석
+  const qKey = (m, n) => `${m.id}#${n}`;
+  const domainOf = (m) => +String(m.objectives[0] || '').replace(/^L\d\s*/, '').split('.')[0] || 0;
+  const questions = (track) => C.missions.filter((m) => !track || m.track === track)
+    .flatMap((m) => m.quiz.map((q, n) => ({ m, n, q, key: qKey(m, n), skill: q.skill || m.tools.join('·') })));
+  function stats(track) {
+    const qs = questions(track);
+    const done = qs.filter((x) => store.rec(x.key));
+    const right = done.filter((x) => store.rec(x.key).firstRight).length;
+    const group = (fn) => {
+      const g = {};
+      for (const x of done) {
+        const k = fn(x); g[k] = g[k] || { k, n: 0, right: 0 };
+        g[k].n += 1; if (store.rec(x.key).firstRight) g[k].right += 1;
+      }
+      return Object.values(g).map((v) => Object.assign(v, { pct: Math.round((v.right / v.n) * 100) }));
+    };
+    return {
+      total: qs.length, answered: done.length, right,
+      pct: done.length ? Math.round((right / done.length) * 100) : 0,
+      byDomain: track ? group((x) => domainOf(x.m)) : [],
+      bySkill: group((x) => x.skill),
+    };
+  }
+  // 복습할 문제: 한 번이라도 틀렸고, 아직 연속 2번 맞히지 못한 문제
+  const reviewQueue = (track) => questions(track).filter((x) => { const r = store.rec(x.key); return r && r.wrongEver && (r.streak || 0) < 2; });
+  const weakSkills = (track, max = 3) => stats(track).bySkill.filter((s) => s.n >= 2 && s.pct < 70).sort((a, b) => a.pct - b.pct).slice(0, max);
+  function nextMission(track) {
+    const list = C.missions.filter((m) => m.track === track);
+    const now = cohortNow();
+    const open = now.phase === 'running' ? list.filter((m) => missionDate(m) <= kstToday()) : [];
+    return open.find((m) => !isDone(m.id)) || list.find((m) => !isDone(m.id)) || null;
   }
 
-  window.GTL = { S, C, STAGES, DAY, esc, rich, kstToday, daysBetween, addDays, fmt, fmtShort, cohortNow, missionDate, store, isDone, progress, header };
+  // ── 머리말(데스크톱 메뉴) + 휴대폰 아래 탭
+  const TABS = [
+    ['index.html', '🏠', '학습실'],
+    ['path.html', '🗺️', '과정'],
+    ['review.html', '🔁', '복습'],
+    ['exam.html', '📝', '모의고사'],
+    ['resources.html', '📚', '자료'],
+  ];
+  function header(current) {
+    const nav = TABS.map(([href, , label]) => `<a href="${href}"${current === href ? ' aria-current="page"' : ''}>${label}</a>`).join('');
+    const cta = `<a class="cta" href="join.html"${current === 'join.html' ? ' aria-current="page"' : ''}>${S.status === 'recruiting' ? S.cohort + ' 신청' : '참여 안내'}</a>`;
+    const q = reviewQueue().length;
+    document.getElementById('top').innerHTML = `<div class="wrap">
+      <a class="brand" href="index.html"><span class="logo" aria-hidden="true">G</span><b>${esc(S.name)}</b><span class="sub">${esc(S.subtitle)}</span></a>
+      <nav class="nav" aria-label="주 메뉴">${nav}${cta}</nav></div>`;
+    const tabbar = document.createElement('nav');
+    tabbar.className = 'tabbar'; tabbar.setAttribute('aria-label', '아래 탭');
+    tabbar.innerHTML = TABS.map(([href, icon, label]) => `<a href="${href}"${current === href ? ' aria-current="page"' : ''}><span aria-hidden="true">${icon}</span>${label}${href === 'review.html' && q ? `<i class="badge">${q}</i>` : ''}</a>`).join('');
+    document.body.appendChild(tabbar);
+    document.getElementById('foot').innerHTML = `<div class="wrap">
+      <p>${esc(S.name)}는 Google과 관계없는 교사들의 독립 스터디입니다. 인증 시험 형식·비용·절차는 바뀔 수 있으니 응시 전에 꼭 공식 페이지에서 확인하세요. 실제 시험 문항은 다루지 않습니다.</p>
+      <p>학습 기록은 이 브라우저에만 저장되고 운영자에게 전송되지 않습니다. <a href="my.html">내 기록·백업</a> · <a href="start.html">시작 준비</a> · 문의 <a href="mailto:${esc(S.email)}">${esc(S.email)}</a> · <a href="${esc(S.threadsUrl)}" rel="noopener" target="_blank">스레드</a></p></div>`;
+  }
+
+  window.GTL = { S, C, STAGES, DOMAINS, DAY, esc, rich, kstToday, daysBetween, addDays, fmt, fmtShort, cohortNow, missionDate, nextMeeting,
+    store, isDone, progress, qKey, domainOf, questions, stats, reviewQueue, weakSkills, nextMission, header };
 })();
