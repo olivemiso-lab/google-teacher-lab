@@ -52,15 +52,15 @@
     const bank = questions(track).length;
     body.innerHTML = `
       <h1 style="font-size:1.8rem">객관식 모의고사</h1>
-      ${draft ? `<div class="note green" style="margin:0 0 14px">⏸ 풀던 모의고사가 있어요 (${draft.picks.filter((p) => p !== null).length}/${draft.keys.length} 답함). <button class="btn small primary" id="resume" style="margin-left:6px">이어서 풀기</button> <button class="btn small" id="discard">버리고 새로 시작</button></div>` : ''}
-      <p class="muted">미션 문제 은행(${bank}문항)에서 공식 평가 영역별로 고르게 ${N}문항을 뽑아요. 다 풀고 제출하면 영역별 결과와 해설을 보여 줘요.</p>
+      ${draft ? `<div class="note green" style="margin:0 0 14px">⏸ 진행 중인 모의고사가 있습니다 (${draft.picks.filter((p) => p !== null).length}/${draft.keys.length} 답함). <button class="btn small primary" id="resume" style="margin-left:6px">이어서 풀기</button> <button class="btn small" id="discard">버리고 새로 시작</button></div>` : ''}
+      <p class="muted">미션 문제 은행(${bank}문항)에서 공식 평가 영역별로 고르게 ${N}문항을 출제합니다. 제출하면 영역별 결과와 해설이 표시됩니다.</p>
       <nav class="tabs" aria-label="단계">${['level1', 'level2'].map((k) => `<a href="?stage=${k}" aria-current="${k === track}">${STAGES[k].icon} ${STAGES[k].name}</a>`).join('')}</nav>
       <div class="card">
         <ul class="checks">
           <li>${N}문항 · 문제마다 보기 4개 중 하나</li>
-          <li>제출하기 전에는 정답을 보여 주지 않아요. 표시해 두고 다시 볼 수 있어요.</li>
-          <li>실제 시험은 객관식 37문항과 실습 시나리오 3개를 3시간 안에 풀어요(공식 안내). 실습은 6주차 금요일 '45분 실습 모의 연습'으로 따로 연습해요.</li>
-          <li>이 모의고사는 스터디가 만든 문제예요. 실제 시험의 문항·난이도·배점과 같지 않아요.</li>
+          <li>제출 전에는 정답이 표시되지 않습니다. 문제에 표시해 두고 다시 볼 수 있습니다.</li>
+          <li>실제 시험은 객관식 37문항과 실습 시나리오 3개, 3시간입니다(공식 안내). 실습은 6주차 금요일 '45분 실습 모의 연습'으로 연습합니다.</li>
+          <li>스터디에서 만든 문제입니다. 실제 시험의 문항·난이도·배점과 다릅니다.</li>
         </ul>
         <label class="small" style="display:block;margin:12px 0 6px"><b>제한 시간</b></label>
         <div class="btns" id="mins">${[40, 60, 90].map((t) => `<button class="btn small${t === 60 ? ' primary' : ''}" data-t="${t}">${t}분</button>`).join('')}</div>
@@ -108,7 +108,7 @@
     body.querySelectorAll('[data-j]').forEach((b) => b.onclick = () => { cur = +b.dataset.j; render(); });
     body.querySelector('#sub').onclick = () => {
       const left = picks.filter((p) => p === null).length;
-      if (left && !confirm(`아직 ${left}문제를 답하지 않았어요. 제출할까요?`)) return;
+      if (left && !confirm(`${left}문제가 남았습니다. 제출할까요?`)) return;
       submit(false);
     };
     window.scrollTo({ top: 0 });
@@ -128,20 +128,20 @@
     const pct = Math.round((right / set.length) * 100);
     body.innerHTML = `
       <div class="card result-big">
-        ${timeout ? '<p class="note small">⏰ 시간이 다 돼서 자동으로 제출했어요.</p>' : ''}
+        ${timeout ? '<p class="note small">⏰ 제한 시간이 끝나 자동 제출되었습니다.</p>' : ''}
         <p class="muted" style="margin:0">${STAGES[track].name} 모의고사 결과</p>
         <p class="score">${right} <small style="font-size:1rem;color:var(--ink-3)">/ ${set.length}</small></p>
         <p class="muted">${pct}% · ${used}분 사용</p>
       </div>
       <div class="card" style="margin-top:14px"><h2 style="font-size:1.05rem">영역별 결과</h2>
         ${Object.entries(dom).sort().map(([d, v]) => { const p = Math.round((v.right / v.n) * 100); return `<div class="hbar"><span>${esc(DOMAINS[track][d] || '기타')}</span><div class="bar"><i class="${p < 70 ? 'low' : ''}" style="width:${p}%"></i></div><b>${p}%</b></div>`; }).join('')}
-        <p class="tiny" style="margin:6px 0 0">영역은 공식 시험 가이드의 평가 영역이에요. 주황색은 70% 미만이에요.</p></div>
+        <p class="tiny" style="margin:6px 0 0">공식 시험 가이드의 평가 영역 기준. 주황색은 70% 미만.</p></div>
       <div class="card" style="margin-top:14px"><h2 style="font-size:1.05rem">틀린 문제 해설 (${res.filter((r) => !r.right).length})</h2>
         ${res.filter((r) => !r.right).map((r) => `<details style="border-top:1px solid var(--line);padding:10px 0"><summary style="cursor:pointer"><b>${rich(r.x.q.q)}</b></summary>
           <p class="small" style="margin:8px 0 2px">내 답: ${r.pick === null ? '(답하지 않음)' : rich(r.x.q.options[r.pick])}</p>
           <p class="small" style="margin:0 0 4px;color:var(--green-ink)">정답: ${rich(r.x.q.options[r.x.q.answer])}</p>
           <p class="small muted" style="margin:0">${rich(r.x.q.why)}</p>
-          <p class="tiny" style="margin:4px 0 0">관련 미션: <a href="mission.html?id=${r.x.m.id}">${esc(r.x.m.title)}</a></p></details>`).join('') || '<p class="muted">모두 맞혔어요! 🎉</p>'}
+          <p class="tiny" style="margin:4px 0 0">관련 미션: <a href="mission.html?id=${r.x.m.id}">${esc(r.x.m.title)}</a></p></details>`).join('') || '<p class="muted">모두 맞혔습니다.</p>'}
       </div>
       <div class="btns" style="margin-top:16px"><button class="btn primary" id="again">다시 풀기 (새 문제 뽑기)</button><a class="btn" href="review.html?stage=${track}">복습함 열기</a></div>`;
     body.querySelector('#again').onclick = intro;

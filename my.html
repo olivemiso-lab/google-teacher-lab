@@ -32,7 +32,7 @@
       <div class="tile"><div class="k">완료한 미션</div><div class="v">${p.done}<small>/ ${p.total}</small></div><div class="s">${p.pct}%</div></div>
       <div class="tile"><div class="k">판단 문제 정답률</div><div class="v">${s.answered ? s.pct + '%' : '–'}</div><div class="s">첫 시도 ${s.right}/${s.answered}</div></div>
       <a class="tile" href="review.html?stage=${track}"><div class="k">복습할 문제</div><div class="v">${reviewQueue(track).length}</div><div class="s">복습함 열기 →</div></a>
-      <a class="tile" href="exam.html?stage=${track}"><div class="k">모의고사</div><div class="v">${ex.length ? Math.round((ex[0].right / ex[0].n) * 100) + '%' : '–'}</div><div class="s">${ex.length ? '최근 결과' : '아직 안 봤어요'}</div></a>
+      <a class="tile" href="exam.html?stage=${track}"><div class="k">모의고사</div><div class="v">${ex.length ? Math.round((ex[0].right / ex[0].n) * 100) + '%' : '–'}</div><div class="s">${ex.length ? '최근 결과' : '기록 없음'}</div></a>
     </div>
 
     <div class="card" style="margin-top:16px"><h2 style="font-size:1.05rem">주차별 미션</h2>
@@ -41,13 +41,13 @@
       <p class="tiny" style="margin:8px 0 0">초록 = 실습 완료 · 노란 테두리 = 오늘</p></div>
 
     <div class="card" style="margin-top:16px"><h2 style="font-size:1.05rem">영역별 정답률 (첫 시도)</h2>
-      ${s.byDomain.length ? s.byDomain.sort((a, b) => a.k - b.k).map((d) => `<div class="hbar"><span>${esc(DOMAINS[track][d.k] || '기타')}</span><div class="bar"><i class="${d.pct < 70 ? 'low' : ''}" style="width:${d.pct}%"></i></div><b>${d.pct}%</b></div>`).join('') : '<p class="muted small">판단 문제를 풀면 공식 평가 영역별로 정답률을 보여 줘요.</p>'}
+      ${s.byDomain.length ? s.byDomain.sort((a, b) => a.k - b.k).map((d) => `<div class="hbar"><span>${esc(DOMAINS[track][d.k] || '기타')}</span><div class="bar"><i class="${d.pct < 70 ? 'low' : ''}" style="width:${d.pct}%"></i></div><b>${d.pct}%</b></div>`).join('') : '<p class="muted small">판단 문제를 풀면 공식 평가 영역별 정답률이 표시됩니다.</p>'}
     </div>
 
     ${ex.length ? `<div class="card" style="margin-top:16px"><h2 style="font-size:1.05rem">모의고사 기록</h2><ul class="checks small">${ex.map((e) => `<li>${esc(e.date)} · ${e.right}/${e.n} (${Math.round((e.right / e.n) * 100)}%) · ${e.used}분</li>`).join('')}</ul></div>` : ''}
 
     <div class="card" style="margin-top:16px"><h2 style="font-size:1.05rem">기록 백업</h2>
-      <p class="muted small">기록은 이 브라우저에만 있어요. 다른 기기로 옮기거나 브라우저를 정리하기 전에 백업 파일을 저장하세요.</p>
+      <p class="muted small">학습 기록은 이 브라우저에만 저장됩니다. 다른 기기로 옮기거나 브라우저 데이터를 지우기 전에 백업 파일을 저장하세요.</p>
       <div class="btns"><button class="btn small" id="exp">⬇ 백업 파일 저장</button><label class="btn small" style="cursor:pointer">⬆ 백업 불러오기<input type="file" id="imp" accept=".json,application/json" hidden></label><button class="btn small" id="rst">기록 지우기</button></div>
       <p class="small" id="msg" role="status" style="margin:8px 0 0"></p></div>`;
   const msg = document.getElementById('msg');
@@ -56,16 +56,16 @@
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob); a.download = `google-teacher-lab-기록-${new Date().toISOString().slice(0, 10)}.json`;
     document.body.appendChild(a); a.click(); a.remove();
-    msg.textContent = '백업 파일을 저장했어요.';
+    msg.textContent = '백업 파일을 저장했습니다.';
   };
   document.getElementById('imp').onchange = async (e) => {
     const f = e.target.files[0]; if (!f) return;
-    if (!confirm('백업 파일로 지금 기록을 바꿀까요? 지금 기록은 이 브라우저에 한 번 따로 보관해 둬요.')) { e.target.value = ''; return; }
-    try { store.importText(await f.text()); msg.textContent = '불러왔어요. 화면을 새로 고칠게요.'; setTimeout(() => location.reload(), 700); }
-    catch (err) { msg.textContent = '불러오지 못했어요: ' + err.message; }
+    if (!confirm('백업 파일로 현재 기록을 바꿀까요? 현재 기록은 브라우저에 별도로 보관됩니다.')) { e.target.value = ''; return; }
+    try { store.importText(await f.text()); msg.textContent = '불러왔습니다. 화면을 새로 고칩니다.'; setTimeout(() => location.reload(), 700); }
+    catch (err) { msg.textContent = '불러오지 못했습니다: ' + err.message; }
   };
   document.getElementById('rst').onclick = () => {
-    if (!confirm('이 브라우저의 학습 기록을 모두 지울까요? 되돌릴 수 없어요.')) return;
+    if (!confirm('이 브라우저의 학습 기록을 모두 지울까요?')) return;
     store.reset(); location.reload();
   };
 })();

@@ -4,9 +4,9 @@
   const C = window.CONTENT;
 
   const STAGES = {
-    level1: { icon: '🌱', name: 'Level 1', who: 'Google 인증이 아직 없어요' },
-    level2: { icon: '🚀', name: 'Level 2', who: 'Level 1이 있어요' },
-    trainer: { icon: '🎓', name: 'Trainer', who: 'Level 1·2가 있거나 거의 다 왔어요' },
+    level1: { icon: '🌱', name: 'Level 1', who: 'Google 인증이 없는 경우' },
+    level2: { icon: '🚀', name: 'Level 2', who: 'Level 1 보유' },
+    trainer: { icon: '🎓', name: 'Trainer', who: 'Level 1·2 보유 또는 응시 예정' },
   };
   // 공식 시험 가이드의 영역 (평가 목표 번호의 앞자리)
   const DOMAINS = {
@@ -93,7 +93,7 @@
     exportText: () => JSON.stringify({ app: 'google-teacher-lab', v: 3, savedAt: new Date().toISOString(), data: mem }),
     importText(txt) {
       const o = JSON.parse(txt);
-      if (!o || o.app !== 'google-teacher-lab' || !o.data) throw new Error('이 앱의 백업 파일이 아니에요.');
+      if (!o || o.app !== 'google-teacher-lab' || !o.data) throw new Error('이 앱의 백업 파일이 아닙니다.');
       try { localStorage.setItem(KEY + '.before-import', JSON.stringify(mem)); } catch (e) { /* 보관 실패해도 진행 */ }
       mem = Object.assign(blank(), o.data); return store.save();
     },

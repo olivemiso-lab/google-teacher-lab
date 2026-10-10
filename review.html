@@ -31,7 +31,7 @@
     for (const x of queue) (bySkill[x.skill] = bySkill[x.skill] || []).push(x);
     body.innerHTML = `
       <h1 style="font-size:1.8rem">복습함</h1>
-      <p class="muted">틀렸던 판단 문제를 모아 다시 풀어요. 연속 두 번 맞히면 복습함에서 빠져요.</p>
+      <p class="muted">틀린 판단 문제를 다시 풉니다. 연속 두 번 맞히면 복습함에서 빠집니다.</p>
       <nav class="tabs" aria-label="단계">${['level1', 'level2'].map((k) => `<a href="?stage=${k}" aria-current="${k === track}">${STAGES[k].icon} ${STAGES[k].name}</a>`).join('')}</nav>
       ${queue.length ? `
         <div class="card" style="margin-bottom:16px;text-align:center">
@@ -39,11 +39,11 @@
           <p class="muted" style="margin:0 0 12px">다시 풀 문제</p>
           <button class="btn primary" id="startq">🔁 복습 시작</button>
         </div>
-        ${weak.length ? `<div class="card" style="margin-bottom:16px"><h2 style="font-size:1.05rem">다시 볼 개념</h2><ul class="chiplist">${weak.map((s) => `<li><span>${esc(s.k)} · ${s.pct}%</span></li>`).join('')}</ul><p class="tiny" style="margin:8px 0 0">첫 시도 정답률이 70%보다 낮은 개념이에요.</p></div>` : ''}
+        ${weak.length ? `<div class="card" style="margin-bottom:16px"><h2 style="font-size:1.05rem">다시 볼 개념</h2><ul class="chiplist">${weak.map((s) => `<li><span>${esc(s.k)} · ${s.pct}%</span></li>`).join('')}</ul><p class="tiny" style="margin:8px 0 0">첫 시도 정답률 70% 미만인 개념</p></div>` : ''}
         <div class="card"><h2 style="font-size:1.05rem">개념별로 보기</h2>
           ${Object.entries(bySkill).map(([k, xs]) => `<p style="margin:10px 0 4px"><b>${esc(k)}</b> <span class="tiny">${xs.length}문제</span></p><ul class="checks small">${xs.map((x) => `<li><a href="mission.html?id=${x.m.id}#quiz">${esc(x.m.title)}</a> · 문제 ${x.n + 1}</li>`).join('')}</ul>`).join('')}
         </div>`
-      : `<div class="card" style="text-align:center"><p style="font-size:2rem;margin:0">🎉</p><p><b>복습할 문제가 없어요.</b></p><p class="muted small">미션의 판단 문제를 풀다가 틀린 문제가 여기에 모여요.</p><a class="btn primary" href="index.html">학습실로</a></div>`}`;
+      : `<div class="card" style="text-align:center"><p style="font-size:2rem;margin:0">🎉</p><p><b>복습할 문제가 없습니다.</b></p><p class="muted small">미션과 모의고사에서 틀린 문제가 여기에 모입니다.</p><a class="btn primary" href="index.html">학습실로</a></div>`}`;
     const s = document.getElementById('startq'); if (s) s.onclick = () => { i = 0; play(); };
   }
 
@@ -64,7 +64,7 @@
       const r = store.answer(x.key, k, right);
       opts.forEach((o) => { const j = +o.dataset.i; o.disabled = true; if (j === q.answer) o.classList.add('right'); else if (j === k) o.classList.add('wrong'); });
       const cleared = r.streak >= 2;
-      body.querySelector('#qres').innerHTML = `<p class="note ${right ? 'green' : 'warn'} small" style="margin:8px 0 0"><b>${right ? (cleared ? '정답! 이 문제는 복습함에서 빠져요.' : '정답이에요. 한 번 더 맞히면 복습 완료!') : '다시 볼까요?'}</b> ${rich(q.why)}</p>
+      body.querySelector('#qres').innerHTML = `<p class="note ${right ? 'green' : 'warn'} small" style="margin:8px 0 0"><b>${right ? (cleared ? '정답입니다. 복습 완료.' : '정답입니다. 한 번 더 맞히면 복습 완료.') : '오답입니다.'}</b> ${rich(q.why)}</p>
         <div class="btns" style="margin-top:10px"><button class="btn primary small" id="nx">${i + 1 < queue.length ? '다음 문제 →' : '복습 마치기'}</button></div>`;
       body.querySelector('#nx').onclick = () => { i += 1; play(); };
     });

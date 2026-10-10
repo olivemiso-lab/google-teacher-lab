@@ -16,14 +16,14 @@
       ? `${S.cohort} 함께반 정원 마감 · 혼자 도전 신청 가능`
       : (() => { const r = window.GTL.recruitState();
           if (r.state === 'before') return `${S.cohort} 신청 ${window.GTL.openLabel()} 시작 · ${fmt(S.recruitEnd)} ${S.recruitEndTime || ''} 마감`;
-          if (r.state === 'closed') return `${S.cohort} 신청 마감 · 혼자 도전은 계속 받아요`;
+          if (r.state === 'closed') return `${S.cohort} 함께반 신청 마감 · 혼자 도전 신청 가능`;
           return `${S.cohort} 신청 받는 중 · ${fmt(S.recruitEnd)} ${S.recruitEndTime || ''} 마감`; })();
     cta.textContent = `${S.cohort} 신청하기`;
   } else if (S.status === 'running') {
     pill.textContent = now.phase === 'running' ? `${S.cohort} 진행 중 · ${now.week}주차` : `${S.cohort} 진행 중`;
     cta.textContent = '참여 안내';
   } else {
-    pill.textContent = '다음 기수를 준비하고 있어요';
+    pill.textContent = '다음 기수 준비 중';
     cta.textContent = '소식 받기';
   }
   const facts = [`${fmt(S.start)} 시작`, `매주 ${S.meeting.day} ${S.meeting.time}`, S.meeting.place, '무료'];
@@ -35,9 +35,9 @@
   // 단계 카드
   const mine = store.get().stage;
   const detail = {
-    level1: ['연습 계정으로 실습하는 미션 30개', '판단 문제 90개 · 모의고사', '토요일 모임에서 막힌 곳 풀기'],
-    level2: ['2025년판 task card 기준 심화 미션 30개', '판단 문제 90개 · 모의고사', '미니 연수 참가자로 함께하기'],
-    trainer: ['트레이너 과정·역량 평가', '2~3분 시연 영상', '활동 3~5개 정리, 지원서'],
+    level1: ['실습 미션 30개', '판단 문제 90개, 모의고사', '토요일 정기 모임'],
+    level2: ['심화 실습 미션 30개', '판단 문제 90개, 모의고사', '토요일 정기 모임'],
+    trainer: ['트레이너 과정과 역량 평가', '2~3분 시연 영상', '활동 기록과 지원서'],
   };
   const goal = { level1: '🏁 Level 1 시험 응시', level2: '🏁 Level 2 시험 응시', trainer: '🏁 트레이너 지원서 제출' };
   const weeks = { level1: S.levelWeeks, level2: S.levelWeeks, trainer: S.trainerWeeks };
@@ -48,7 +48,7 @@
       <span class="who">${esc(s.who)}</span>
       <ul>${detail[k].map((d) => `<li>${esc(d)}</li>`).join('')}</ul>
       <span class="goal">${goal[k]}</span>
-      <span class="btn small" style="align-self:flex-start;margin-top:10px">${mine === k ? '내 학습실 열기 →' : '이 단계로 시작 →'}</span>
+      <span class="btn small" style="align-self:flex-start;margin-top:10px">${mine === k ? '학습실 열기' : '이 과정 선택'}</span>
     </a>`).join('');
 
   // 함께 걷는 사람
@@ -67,7 +67,7 @@
     ...(S.recruitOpen ? [[S.recruitOpen.slice(0, 10), '신청 시작 · ' + window.GTL.openLabel().replace(/^오늘 /, '')]] : []),
     [S.recruitEnd, `모집 마감 · ${S.recruitEndTime || ''}`],
     [S.orientation, `${otFirst ? '첫 토요일 모임 · 오리엔테이션' : '오리엔테이션'} · ${S.meeting.time.split(' ~')[0]} · 2~3명씩 짝 정하기`],
-    [S.start, '1주차 시작 · 첫 미션이 열려요'],
+    [S.start, '1주차 시작'],
     ...(otFirst ? [] : [[sat(1), '첫 토요일 모임']]),
     [sat(S.levelWeeks), `Level 1·2반 마지막 모임 · ${S.levelWeeks}주 마무리`],
     [sat(S.trainerWeeks), `Trainer반 마지막 모임 · 지원서 서로 읽기`],
@@ -139,8 +139,8 @@
     dash.innerHTML = `
       <div class="dash-hero"><div>
         <span class="tag" style="background:rgba(255,255,255,.18);color:#fff">🎓 Trainer · ${esc(where)}</span>
-        <h1>${nextStep ? esc(nextStep.title.split('·')[0].trim()) + ' 단계예요' : '로드맵을 모두 체크했어요'}</h1>
-        <p>공식 로드맵 8단계 중 ${done}단계를 마쳤어요.</p>
+        <h1>${nextStep ? esc(nextStep.title.split('·')[0].trim()) + ' 단계' : '로드맵 8단계 완료'}</h1>
+        <p>공식 로드맵 ${done}/8단계 완료</p>
         <div class="btns" style="margin-top:14px"><a class="btn" href="path.html?stage=trainer">로드맵 이어가기 →</a><a class="btn ghost" href="kit.html">준비 양식</a></div>
       </div><div class="ring" style="--p:${Math.round((done / 8) * 100)}"><b>${done}/8<small>로드맵</small></b></div></div>
       <div class="tiles" style="margin-top:14px">
@@ -162,8 +162,8 @@
   dash.innerHTML = `
     <div class="dash-hero"><div>
       <span class="tag" style="background:rgba(255,255,255,.18);color:#fff">${STAGES[stage].icon} ${STAGES[stage].name} · ${esc(where)}</span>
-      <h1>${first ? '첫 미션부터 시작해 볼까요?' : nm ? '이어서 학습해요' : '미션 30개를 모두 마쳤어요 🎉'}</h1>
-      <p>${nm ? `${nm.week}주차 ${'월화수목금'[nm.day - 1]} · ${esc(nm.title)}` : '모의고사와 복습으로 마무리해요.'}</p>
+      <h1>${first ? '첫 미션' : nm ? '이어서 학습하기' : '미션 30개 완료'}</h1>
+      <p>${nm ? `${nm.week}주차 ${'월화수목금'[nm.day - 1]} · ${esc(nm.title)}` : '모의고사와 복습으로 마무리하세요.'}</p>
       <div class="btns" style="margin-top:14px">
         ${nm ? `<a class="btn" href="mission.html?id=${nm.id}">▶ ${first ? '시작하기' : '이어서 학습하기'}</a>` : `<a class="btn" href="exam.html?stage=${stage}">📝 모의고사 보기</a>`}
         ${q.length ? `<a class="btn ghost" href="review.html?stage=${stage}">🔁 복습 ${q.length}문제</a>` : ''}
@@ -173,8 +173,8 @@
 
     <div class="tiles" style="margin-top:14px">
       <div class="tile"><div class="k">${wk}주차 진행</div><div class="v">${weekDone}<small>/ ${weekList.length}</small></div><div class="s">${esc(C.weeks[stage][wk - 1])}</div></div>
-      <div class="tile"><div class="k">판단 문제 정답률</div><div class="v">${s.answered ? s.pct + '%' : '–'}</div><div class="s">${s.answered ? `첫 시도 ${s.right}/${s.answered}` : '미션에서 풀어 보세요'}</div></div>
-      <a class="tile" href="review.html?stage=${stage}"><div class="k">복습할 문제</div><div class="v">${q.length}</div><div class="s">${q.length ? '복습함 열기 →' : '틀린 문제가 모여요'}</div></a>
+      <div class="tile"><div class="k">판단 문제 정답률</div><div class="v">${s.answered ? s.pct + '%' : '–'}</div><div class="s">${s.answered ? `첫 시도 ${s.right}/${s.answered}` : '미션에서 풀 수 있습니다'}</div></div>
+      <a class="tile" href="review.html?stage=${stage}"><div class="k">복습할 문제</div><div class="v">${q.length}</div><div class="s">${q.length ? '복습함 열기' : '틀린 문제가 모입니다'}</div></a>
       <div class="tile"><div class="k">다음 모임</div><div class="v" style="font-size:1.15rem">${esc(meetText)}</div><div class="s">Google Meet</div></div>
     </div>
 
@@ -182,9 +182,9 @@
       <div class="card"><h2 style="font-size:1.05rem">${wk}주차 미션</h2>
         <ul class="mlist">${weekList.map((m) => `<li class="${m.type === 'daily' ? '' : 'fri'}"><a href="mission.html?id=${m.id}"><span class="d">${'월화수목금'[m.day - 1]}</span><span class="t">${esc(m.title)}</span><span class="m">${isDone(m.id) ? '<span class="ok">✓</span>' : window.GTL.isPracticed(m.id) ? '<span class="tiny">실습✓</span>' : m.minutes + '분'}</span></a></li>`).join('')}</ul></div>
       <div class="card"><h2 style="font-size:1.05rem">다시 볼 개념</h2>
-        ${weak.length ? `<ul class="chiplist">${weak.map((w) => `<li><a href="review.html?stage=${stage}">${esc(w.k)} · ${w.pct}%</a></li>`).join('')}</ul><p class="tiny" style="margin:8px 0 0">첫 시도 정답률이 70%보다 낮은 개념이에요.</p>` : ''}
+        ${weak.length ? `<ul class="chiplist">${weak.map((w) => `<li><a href="review.html?stage=${stage}">${esc(w.k)} · ${w.pct}%</a></li>`).join('')}</ul><p class="tiny" style="margin:8px 0 0">첫 시도 정답률 70% 미만인 개념</p>` : ''}
         ${wk2.recent.length ? `<p class="small" style="margin:${weak.length ? '12px' : '0'} 0 6px"><b>최근에 틀린 개념</b></p><ul class="chiplist">${wk2.recent.map((k) => `<li><a href="review.html?stage=${stage}">${esc(k)}</a></li>`).join('')}</ul>` : ''}
-        ${!weak.length && !wk2.recent.length ? `<p class="muted small" style="margin:0">${!wk2.answered ? '판단 문제를 풀면 약한 개념을 찾아 줘요.' : !wk2.enough ? `아직 분석할 기록이 부족해요. 판단 문제를 ${6 - wk2.answered}개 더 풀면 보여 줄게요.` : '지금까지 틀린 개념이 없어요. 👍'}</p>` : ''}
+        ${!weak.length && !wk2.recent.length ? `<p class="muted small" style="margin:0">${!wk2.answered ? '판단 문제를 풀면 약한 개념이 표시됩니다.' : !wk2.enough ? `분석할 기록이 부족합니다. 판단 문제를 ${6 - wk2.answered}개 더 풀면 표시됩니다.` : '틀린 개념이 없습니다.'}</p>` : ''}
         <p class="small" style="margin:14px 0 0"><a href="my.html?stage=${stage}">📊 내 기록 전체 보기</a> · <a href="exam.html?stage=${stage}">📝 모의고사</a></p></div>
     </div>`;
   dash.hidden = false;
