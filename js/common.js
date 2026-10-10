@@ -44,7 +44,8 @@
     if (S.status !== 'recruiting') return { state: 'none' };
     const open = S.recruitOpen ? Date.parse(S.recruitOpen) : 0;
     if (now < open) return { state: 'before', ms: open - now };
-    if (kstToday(new Date(now)) > S.recruitEnd) return { state: 'closed' };
+    const close = S.recruitClose ? Date.parse(S.recruitClose) : Date.parse(S.recruitEnd + 'T23:59:59+09:00');
+    if (now >= close) return { state: 'closed' };
     return { state: 'open' };
   }
   const openLabel = () => {

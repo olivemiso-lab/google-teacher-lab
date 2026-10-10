@@ -96,6 +96,9 @@
     };
     apply.innerHTML = `<span class="btn primary" aria-disabled="true" style="opacity:.85;cursor:default">⏰ ${window.GTL.openLabel()}에 신청이 열려요</span><span class="small">남은 시간 <b id="countdown"></b></span>`;
     out(); setInterval(out, 1000);
+  } else if (rs.state === 'closed' && S.formUrl) {
+    pill.textContent = `${S.cohort} 함께반 신청 마감 · 혼자 도전·대기 신청은 계속 받아요`;
+    apply.innerHTML = `<a class="btn primary" href="${esc(S.formUrl)}" target="_blank" rel="noopener">혼자 도전·대기 신청 ↗</a><span class="tiny">마감 뒤 신청은 혼자 도전으로 함께하고, 함께반 자리가 나면 순서대로 연락드려요</span>`;
   } else if (rs.state === 'open' && S.formUrl) {
     pill.textContent = `${S.cohort} 신청 받는 중 · ${fmt(S.recruitEnd)} ${S.recruitEndTime || ''} 마감`;
     apply.innerHTML = `<a class="btn primary" href="${esc(S.formUrl)}" target="_blank" rel="noopener">${S.cohort} 신청서 쓰기 ↗</a><span class="tiny">구글 설문지로 이동해요</span>`;
