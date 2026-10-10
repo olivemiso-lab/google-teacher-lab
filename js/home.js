@@ -153,7 +153,7 @@
     return;
   }
 
-  const p = progress(stage), s = stats(stage), q = reviewQueue(stage), weak = weakSkills(stage);
+  const p = progress(stage), s = stats(stage), q = reviewQueue(stage), wk2 = window.GTL.weakness(stage), weak = wk2.weak;
   const nm = nextMission(stage);
   const wk = now.phase === 'running' && !now.levelDone ? now.week : (nm ? nm.week : 1);
   const weekList = C.missions.filter((m) => m.track === stage && m.week === wk);
@@ -180,9 +180,11 @@
 
     <div class="grid g2" style="margin-top:14px">
       <div class="card"><h2 style="font-size:1.05rem">${wk}주차 미션</h2>
-        <ul class="mlist">${weekList.map((m) => `<li class="${m.type === 'daily' ? '' : 'fri'}"><a href="mission.html?id=${m.id}"><span class="d">${'월화수목금'[m.day - 1]}</span><span class="t">${esc(m.title)}</span><span class="m">${isDone(m.id) ? '<span class="ok">✓</span>' : m.minutes + '분'}</span></a></li>`).join('')}</ul></div>
+        <ul class="mlist">${weekList.map((m) => `<li class="${m.type === 'daily' ? '' : 'fri'}"><a href="mission.html?id=${m.id}"><span class="d">${'월화수목금'[m.day - 1]}</span><span class="t">${esc(m.title)}</span><span class="m">${isDone(m.id) ? '<span class="ok">✓</span>' : window.GTL.isPracticed(m.id) ? '<span class="tiny">실습✓</span>' : m.minutes + '분'}</span></a></li>`).join('')}</ul></div>
       <div class="card"><h2 style="font-size:1.05rem">다시 볼 개념</h2>
-        ${weak.length ? `<ul class="chiplist">${weak.map((w) => `<li><a href="review.html?stage=${stage}">${esc(w.k)} · ${w.pct}%</a></li>`).join('')}</ul><p class="tiny" style="margin:8px 0 0">첫 시도 정답률이 70%보다 낮은 개념이에요.</p>` : `<p class="muted small" style="margin:0">판단 문제를 풀수록 여기에 약한 개념이 보여요. 지금은 걱정할 개념이 없어요.</p>`}
+        ${weak.length ? `<ul class="chiplist">${weak.map((w) => `<li><a href="review.html?stage=${stage}">${esc(w.k)} · ${w.pct}%</a></li>`).join('')}</ul><p class="tiny" style="margin:8px 0 0">첫 시도 정답률이 70%보다 낮은 개념이에요.</p>` : ''}
+        ${wk2.recent.length ? `<p class="small" style="margin:${weak.length ? '12px' : '0'} 0 6px"><b>최근에 틀린 개념</b></p><ul class="chiplist">${wk2.recent.map((k) => `<li><a href="review.html?stage=${stage}">${esc(k)}</a></li>`).join('')}</ul>` : ''}
+        ${!weak.length && !wk2.recent.length ? `<p class="muted small" style="margin:0">${!wk2.answered ? '판단 문제를 풀면 약한 개념을 찾아 줘요.' : !wk2.enough ? `아직 분석할 기록이 부족해요. 판단 문제를 ${6 - wk2.answered}개 더 풀면 보여 줄게요.` : '지금까지 틀린 개념이 없어요. 👍'}</p>` : ''}
         <p class="small" style="margin:14px 0 0"><a href="my.html?stage=${stage}">📊 내 기록 전체 보기</a> · <a href="exam.html?stage=${stage}">📝 모의고사</a></p></div>
     </div>`;
   dash.hidden = false;

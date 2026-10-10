@@ -54,6 +54,13 @@ ok(!G.reviewQueue('level1').some((x) => x.key === k0), '연속 두 번 맞히면
 ok(G.store.rec(k0).firstRight === false && G.stats('level1').answered === 1, '첫 시도 기록은 그대로 남음');
 const back = G.store.exportText(); G.store.reset(); G.store.importText(back);
 ok(G.store.rec(k0) && G.store.rec(k0).n === 3, '백업 파일로 기록 복원');
+G.store.setMission('l1-1-2', { basic: true });
+ok(G.isPracticed('l1-1-2') && !G.isDone('l1-1-2'), '실습만 하면 학습 완료가 아님');
+[0, 1, 2].forEach((n) => G.store.answer(`l1-1-2#${n}`, 0, false));
+ok(G.isDone('l1-1-2'), '실습 + 판단 문제를 모두 하면 학습 완료');
+ok(G.weakness('level1').recent.length > 0, '틀린 개념이 약점 요약에 나옴');
+ok(G.questions('level1').every((x) => G.DOMAINS.level1[x.domain]), '문제마다 Level 1 평가 영역이 있음');
+ok(G.questions('level2').every((x) => G.DOMAINS.level2[x.domain]), '문제마다 Level 2 평가 영역이 있음');
 ok(G.nextMeeting('2026-10-12') === '2026-10-17' && G.nextMeeting('2026-10-17') === '2026-10-17' && G.nextMeeting('2026-10-18') === '2026-10-24', '다음 토요일 모임 계산');
 
 console.log(fail ? `\n${fail}개 실패` : '\n모두 통과');

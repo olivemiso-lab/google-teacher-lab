@@ -142,7 +142,7 @@
   }
 
   // 판단 문제: 한 문제씩, 바로 채점, 틀리면 다시 풀기
-  let qi = 0;
+  let qi = 0, fresh = false;
   const qBox = document.getElementById('quiz');
   function renderQuiz() {
     const q = m.quiz[qi];
@@ -166,13 +166,14 @@
       });
       const right = picked === q.answer;
       qBox.querySelector('#qres').innerHTML = `<p class="note ${right ? 'green' : 'warn'} small" style="margin:8px 0 0"><b>${right ? '정답이에요.' : '다시 볼까요?'}</b> ${rich(q.why)}</p>
-        ${right ? '' : '<button class="btn small" id="retry" style="margin-top:8px">🔁 다시 풀기</button>'}`;
+        <button class="btn small" id="retry" style="margin-top:8px">🔁 ${right ? '한 번 더 풀기' : '다시 풀기'}</button>`;
       const rt = qBox.querySelector('#retry');
       if (rt) rt.onclick = () => { opts.forEach((b) => { b.disabled = false; b.classList.remove('right', 'wrong'); }); qBox.querySelector('#qres').innerHTML = ''; bindOpts(); };
       markSteps();
     };
     const bindOpts = () => opts.forEach((b) => { b.onclick = () => { const i = +b.dataset.i; store.answer(key, i, i === q.answer); show(i); }; });
-    if (r) show(r.last); else bindOpts();
+    if (r && !fresh) show(r.last); else bindOpts();
+    fresh = false;
     const p = qBox.querySelector('#qprev'); if (p) p.onclick = () => { qi -= 1; renderQuiz(); };
     const n = qBox.querySelector('#qnext'); if (n) n.onclick = () => { qi += 1; renderQuiz(); };
   }
@@ -186,7 +187,9 @@
     const good = firstRight.map((x) => x.q.skill || `문제 ${x.n + 1}`);
     const again = answered.filter((x) => !x.r.firstRight).map((x) => x.q.skill || `문제 ${x.n + 1}`);
     const firstWrong = answered.find((x) => !x.r.firstRight || !x.r.lastRight);
+    const learned = stepsDone === m.steps.length && answered.length === m.quiz.length;
     document.getElementById('result').innerHTML = `<div class="card">
+      <p class="${learned ? 'fb-good' : 'fb-again'}" style="margin:0 0 12px">${learned ? '✅ <b>학습 완료</b> · 실습과 판단 문제를 모두 마쳤어요.' : stepsDone === m.steps.length ? '✍️ <b>실습 완료</b> · 판단 문제까지 풀면 학습 완료예요.' : '아직 진행 중이에요. 실습과 판단 문제를 모두 마치면 학습 완료예요.'}</p>
       <div class="tiles" style="margin-bottom:14px">
         <div class="tile"><div class="k">실습</div><div class="v">${stepsDone}<small>/ ${m.steps.length}</small></div><div class="s">${stepsDone === m.steps.length ? '모두 해냈어요' : '남은 지시사항이 있어요'}</div></div>
         <div class="tile"><div class="k">판단 문제 (첫 시도)</div><div class="v">${firstRight.length}<small>/ ${m.quiz.length}</small></div><div class="s">${answered.length < m.quiz.length ? `${m.quiz.length - answered.length}문제 남음` : '모두 풀었어요'}</div></div>
@@ -200,7 +203,7 @@
         ${next ? `<a class="btn primary" href="mission.html?id=${next.id}">다음 미션: ${esc(next.title)} →</a>` : `<a class="btn primary" href="path.html?stage=${m.track}">과정 목록으로 →</a>`}
       </div>
       <p class="small" style="margin:12px 0 0"><a href="review.html">복습함 열기</a> · <a href="index.html">학습실로</a></p></div>`;
-    const rd = document.getElementById('redo'); if (rd) rd.onclick = () => { qi = firstWrong.n; go(3); };
+    const rd = document.getElementById('redo'); if (rd) rd.onclick = () => { qi = firstWrong.n; fresh = true; go(3); };
     const bs = document.getElementById('back-steps'); if (bs) bs.onclick = () => go(1);
   }
 

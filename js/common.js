@@ -67,7 +67,11 @@
   const KEY = 'gtl.v3'; // v3: 문제마다 첫 시도·다시 풀기 기록
   const blank = () => ({ stage: '', missions: {}, answers: {}, notes: {}, exams: [] });
   let mem = blank();
-  try { const raw = localStorage.getItem(KEY); if (raw) mem = Object.assign(blank(), JSON.parse(raw)); } catch (e) { /* 저장 불가 환경 */ }
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (raw) mem = Object.assign(blank(), JSON.parse(raw));
+    else { const old = JSON.parse(localStorage.getItem('gtl.v2') || 'null'); if (old && old.stage) mem.stage = old.stage; } // 예전 버전에서 고른 단계는 이어받기 (미션 형식이 바뀌어 진도는 새로 시작)
+  } catch (e) { /* 저장 불가 환경 */ }
   const store = {
     get: () => mem,
     save() { try { localStorage.setItem(KEY, JSON.stringify(mem)); return true; } catch (e) { return false; } },
@@ -89,11 +93,17 @@
     importText(txt) {
       const o = JSON.parse(txt);
       if (!o || o.app !== 'google-teacher-lab' || !o.data) throw new Error('이 앱의 백업 파일이 아니에요.');
+      try { localStorage.setItem(KEY + '.before-import', JSON.stringify(mem)); } catch (e) { /* 보관 실패해도 진행 */ }
       mem = Object.assign(blank(), o.data); return store.save();
     },
-    reset() { mem = blank(); return store.save(); },
+    reset() { try { localStorage.setItem(KEY + '.before-reset', JSON.stringify(mem)); } catch (e) { /* 무시 */ } mem = blank(); return store.save(); },
+    // 모의고사 진행 중 상태 (새로고침해도 이어서)
+    examDraft: () => mem.examDraft || null,
+    setExamDraft(d) { if (d) mem.examDraft = d; else delete mem.examDraft; return store.save(); },
   };
-  const isDone = (id) => !!store.mission(id).basic;
+  const isPracticed = (id) => !!store.mission(id).basic; // 지시사항을 모두 해냄
+  const quizDone = (id) => { const m = C.missions.find((x) => x.id === id); return !!m && m.quiz.every((_, n) => mem.answers[`${id}#${n}`]); };
+  const isDone = (id) => isPracticed(id) && quizDone(id); // 학습 완료 = 실습 + 판단 문제
   function progress(track, upToWeek = 99) {
     const list = C.missions.filter((m) => m.track === track && m.week <= upToWeek);
     const done = list.filter((m) => isDone(m.id)).length;
@@ -104,7 +114,7 @@
   const qKey = (m, n) => `${m.id}#${n}`;
   const domainOf = (m) => +String(m.objectives[0] || '').replace(/^L\d\s*/, '').split('.')[0] || 0;
   const questions = (track) => C.missions.filter((m) => !track || m.track === track)
-    .flatMap((m) => m.quiz.map((q, n) => ({ m, n, q, key: qKey(m, n), skill: q.skill || m.tools.join('·') })));
+    .flatMap((m) => m.quiz.map((q, n) => ({ m, n, q, key: qKey(m, n), skill: q.skill || m.tools.join('·'), domain: q.domain || domainOf(m) })));
   function stats(track) {
     const qs = questions(track);
     const done = qs.filter((x) => store.rec(x.key));
@@ -120,13 +130,19 @@
     return {
       total: qs.length, answered: done.length, right,
       pct: done.length ? Math.round((right / done.length) * 100) : 0,
-      byDomain: track ? group((x) => domainOf(x.m)) : [],
+      byDomain: track ? group((x) => x.domain) : [],
       bySkill: group((x) => x.skill),
     };
   }
   // 복습할 문제: 한 번이라도 틀렸고, 아직 연속 2번 맞히지 못한 문제
   const reviewQueue = (track) => questions(track).filter((x) => { const r = store.rec(x.key); return r && r.wrongEver && (r.streak || 0) < 2; });
   const weakSkills = (track, max = 3) => stats(track).bySkill.filter((s) => s.n >= 2 && s.pct < 70).sort((a, b) => a.pct - b.pct).slice(0, max);
+  // 약한 개념 요약: 기록이 적으면 '부족'으로, 아니면 약한 개념 + 최근에 틀린 개념
+  function weakness(track) {
+    const s = stats(track);
+    const recent = [...new Set(reviewQueue(track).map((x) => x.skill))].slice(0, 5);
+    return { answered: s.answered, enough: s.answered >= 6, weak: weakSkills(track, 4), recent };
+  }
   function nextMission(track) {
     const list = C.missions.filter((m) => m.track === track);
     const now = cohortNow();
@@ -159,5 +175,5 @@
   }
 
   window.GTL = { S, C, STAGES, DOMAINS, DAY, esc, rich, kstToday, daysBetween, addDays, fmt, fmtShort, cohortNow, missionDate, nextMeeting, recruitState, openLabel,
-    store, isDone, progress, qKey, domainOf, questions, stats, reviewQueue, weakSkills, nextMission, header };
+    store, isDone, isPracticed, quizDone, weakness, progress, qKey, domainOf, questions, stats, reviewQueue, weakSkills, nextMission, header };
 })();

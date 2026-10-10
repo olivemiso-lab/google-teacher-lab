@@ -44,7 +44,7 @@
           <ul class="mlist">${list.map((m) => `<li class="${m.type === 'daily' ? '' : 'fri'}"><a href="mission.html?id=${m.id}">
             <span class="d">${DAYS[m.day - 1]}</span>
             <span class="t">${m.type === 'friday' ? '<b>실전</b> · ' : m.type === 'mock' ? '<b>모의 시험</b> · ' : ''}${esc(m.title)}</span>
-            <span class="m">${isDone(m.id) ? '<span class="ok">✓ 완료</span>' : (m.minutes || 5) + '분'}</span></a></li>`).join('')}</ul>
+            <span class="m">${isDone(m.id) ? '<span class="ok">✓ 완료</span>' : window.GTL.isPracticed(m.id) ? '<span class="tiny">실습만 ✓</span>' : m.minutes + '분'}</span></a></li>`).join('')}</ul>
         </div>`;
       }).join('')}
       <p class="note green small">처음이라면 <a href="start.html">시작 준비</a>에서 연습 계정부터 만들어 주세요.</p>

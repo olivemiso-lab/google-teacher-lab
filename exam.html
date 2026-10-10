@@ -17,7 +17,7 @@
 <script src="js/common.js"></script>
 <script>
 (function () {
-  const { STAGES, DOMAINS, esc, rich, store, questions, domainOf, header } = window.GTL;
+  const { STAGES, DOMAINS, esc, rich, store, questions, header } = window.GTL;
   header('exam.html');
   const body = document.getElementById('body');
   const N = 37;
@@ -25,10 +25,20 @@
   if (!['level1', 'level2'].includes(track)) track = store.get().stage === 'level2' ? 'level2' : 'level1';
   let set = [], picks = [], cur = 0, minutes = 60, endAt = 0, timer = 0, flagged = new Set();
 
+  // 진행 중 상태를 저장해 새로고침·이동 뒤에도 이어서 풀 수 있게
+  const saveDraft = () => store.setExamDraft({ track, keys: set.map((x) => x.key), picks, cur, endAt, minutes, flagged: [...flagged] });
+  function resume(d) {
+    const byKey = Object.fromEntries(questions(d.track).map((x) => [x.key, x]));
+    if (!d.keys.every((k) => byKey[k])) { store.setExamDraft(null); return false; } // 문제 은행이 바뀌었으면 새로 시작
+    track = d.track; set = d.keys.map((k) => byKey[k]); picks = d.picks; cur = d.cur; endAt = d.endAt; minutes = d.minutes; flagged = new Set(d.flagged || []);
+    if (Date.now() >= endAt) { submit(true); return true; }
+    clearInterval(timer); timer = setInterval(tick, 1000); render(); return true;
+  }
+
   // 영역별로 고르게: 영역마다 섞은 뒤 돌아가며 한 문제씩
   function sample() {
     const by = {};
-    for (const x of questions(track)) (by[domainOf(x.m)] = by[domainOf(x.m)] || []).push(x);
+    for (const x of questions(track)) (by[x.domain] = by[x.domain] || []).push(x);
     const pools = Object.values(by).map((a) => a.sort(() => Math.random() - 0.5));
     const out = [];
     while (out.length < N && pools.some((p) => p.length)) for (const p of pools) if (p.length && out.length < N) out.push(p.pop());
@@ -37,10 +47,12 @@
 
   function intro() {
     clearInterval(timer);
+    const draft = store.examDraft();
     const hist = store.get().exams.filter((e) => e.track === track).slice(-5).reverse();
     const bank = questions(track).length;
     body.innerHTML = `
       <h1 style="font-size:1.8rem">객관식 모의고사</h1>
+      ${draft ? `<div class="note green" style="margin:0 0 14px">⏸ 풀던 모의고사가 있어요 (${draft.picks.filter((p) => p !== null).length}/${draft.keys.length} 답함). <button class="btn small primary" id="resume" style="margin-left:6px">이어서 풀기</button> <button class="btn small" id="discard">버리고 새로 시작</button></div>` : ''}
       <p class="muted">미션 문제 은행(${bank}문항)에서 공식 평가 영역별로 고르게 ${N}문항을 뽑아요. 다 풀고 제출하면 영역별 결과와 해설을 보여 줘요.</p>
       <nav class="tabs" aria-label="단계">${['level1', 'level2'].map((k) => `<a href="?stage=${k}" aria-current="${k === track}">${STAGES[k].icon} ${STAGES[k].name}</a>`).join('')}</nav>
       <div class="card">
@@ -56,14 +68,16 @@
       </div>
       ${hist.length ? `<div class="card" style="margin-top:16px"><h2 style="font-size:1.05rem">지난 결과</h2><ul class="checks small">${hist.map((e) => `<li>${esc(e.date)} · ${e.right}/${e.n} (${Math.round((e.right / e.n) * 100)}%) · ${e.mins}분 중 ${e.used}분</li>`).join('')}</ul></div>` : ''}`;
     body.querySelectorAll('[data-t]').forEach((b) => b.onclick = () => { minutes = +b.dataset.t; body.querySelectorAll('[data-t]').forEach((x) => x.classList.toggle('primary', x === b)); });
-    body.querySelector('#go').onclick = startExam;
+    body.querySelector('#go').onclick = () => { if (draft && !confirm('풀던 모의고사를 버리고 새로 시작할까요?')) return; startExam(); };
+    const rs = body.querySelector('#resume'); if (rs) rs.onclick = () => resume(draft);
+    const ds = body.querySelector('#discard'); if (ds) ds.onclick = () => { store.setExamDraft(null); intro(); };
   }
 
   function startExam() {
     set = sample(); picks = set.map(() => null); cur = 0; flagged = new Set();
     endAt = Date.now() + minutes * 60e3;
     clearInterval(timer); timer = setInterval(tick, 1000);
-    render();
+    saveDraft(); render();
   }
   function tick() {
     const left = Math.max(0, Math.round((endAt - Date.now()) / 1000));
@@ -73,6 +87,7 @@
   }
 
   function render() {
+    saveDraft();
     const x = set[cur], q = x.q;
     const done = picks.filter((p) => p !== null).length;
     body.innerHTML = `
@@ -103,12 +118,13 @@
     clearInterval(timer);
     const used = Math.min(minutes, Math.round((minutes * 60e3 - Math.max(0, endAt - Date.now())) / 60e3));
     const res = set.map((x, k) => ({ x, pick: picks[k], right: picks[k] === x.q.answer }));
-    // 처음 보는 문제는 학습 기록에도 남겨 복습함과 분석에 반영
-    for (const r of res) if (r.pick !== null && !store.rec(r.x.key)) store.answer(r.x.key, r.pick, r.right);
+    // 학습 기록에 반영: 첫 시도는 그대로 두고, 최근 결과와 복습 상태는 갱신 (틀리면 복습함으로)
+    for (const r of res) if (r.pick !== null) store.answer(r.x.key, r.pick, r.right);
+    store.setExamDraft(null);
     const right = res.filter((r) => r.right).length;
     store.addExam({ track, date: new Date().toLocaleDateString('ko-KR'), n: set.length, right, mins: minutes, used });
     const dom = {};
-    for (const r of res) { const d = domainOf(r.x.m); dom[d] = dom[d] || { n: 0, right: 0 }; dom[d].n += 1; if (r.right) dom[d].right += 1; }
+    for (const r of res) { const d = r.x.domain; dom[d] = dom[d] || { n: 0, right: 0 }; dom[d].n += 1; if (r.right) dom[d].right += 1; }
     const pct = Math.round((right / set.length) * 100);
     body.innerHTML = `
       <div class="card result-big">

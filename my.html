@@ -60,6 +60,7 @@
   };
   document.getElementById('imp').onchange = async (e) => {
     const f = e.target.files[0]; if (!f) return;
+    if (!confirm('백업 파일로 지금 기록을 바꿀까요? 지금 기록은 이 브라우저에 한 번 따로 보관해 둬요.')) { e.target.value = ''; return; }
     try { store.importText(await f.text()); msg.textContent = '불러왔어요. 화면을 새로 고칠게요.'; setTimeout(() => location.reload(), 700); }
     catch (err) { msg.textContent = '불러오지 못했어요: ' + err.message; }
   };
