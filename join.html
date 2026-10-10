@@ -85,7 +85,19 @@
   if (S.capacity) rows.push(['인원', S.capacity]);
   document.getElementById('facts').innerHTML = rows.map(([k, v]) => `<li><span class="when">${k}</span><span>${esc(v)}</span></li>`).join('');
   const apply = document.getElementById('apply');
-  if (S.status === 'recruiting' && S.formUrl) {
+  const rs = window.GTL.recruitState();
+  if (rs.state === 'before') {
+    pill.textContent = `${S.cohort} 신청 ${window.GTL.openLabel()} 시작`;
+    const out = () => {
+      const r = window.GTL.recruitState();
+      if (r.state !== 'before') { location.reload(); return; }
+      const s = Math.ceil(r.ms / 1000), h = Math.floor(s / 3600), mi = Math.floor((s % 3600) / 60), se = s % 60;
+      document.getElementById('countdown').textContent = `${h ? h + '시간 ' : ''}${mi}분 ${String(se).padStart(2, '0')}초`;
+    };
+    apply.innerHTML = `<span class="btn primary" aria-disabled="true" style="opacity:.85;cursor:default">⏰ ${window.GTL.openLabel()}에 신청이 열려요</span><span class="small">남은 시간 <b id="countdown"></b></span>`;
+    out(); setInterval(out, 1000);
+  } else if (rs.state === 'open' && S.formUrl) {
+    pill.textContent = `${S.cohort} 신청 받는 중 · ${fmt(S.recruitEnd)} ${S.recruitEndTime || ''} 마감`;
     apply.innerHTML = `<a class="btn primary" href="${esc(S.formUrl)}" target="_blank" rel="noopener">${S.cohort} 신청서 쓰기 ↗</a><span class="tiny">구글 설문지로 이동해요</span>`;
   } else {
     apply.innerHTML = `<a class="btn primary" href="${esc(S.threadsUrl)}" target="_blank" rel="noopener">스레드에서 소식 받기 ↗</a><span class="tiny">${S.status === 'recruiting' ? '신청서를 곧 열어요' : ''}</span>`;

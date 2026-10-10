@@ -39,6 +39,22 @@
     return { phase: 'running', week, dow, levelDone: week > S.levelWeeks, trainerDone: week > S.trainerWeeks };
   }
   const missionDate = (m) => addDays(S.start, (m.week - 1) * 7 + (m.day - 1));
+  // 신청 상태: before(열리기 전) · open(받는 중) · closed(마감)
+  function recruitState(now = Date.now()) {
+    if (S.status !== 'recruiting') return { state: 'none' };
+    const open = S.recruitOpen ? Date.parse(S.recruitOpen) : 0;
+    if (now < open) return { state: 'before', ms: open - now };
+    if (kstToday(new Date(now)) > S.recruitEnd) return { state: 'closed' };
+    return { state: 'open' };
+  }
+  const openLabel = () => {
+    if (!S.recruitOpen) return '';
+    const d = new Date(Date.parse(S.recruitOpen) + 9 * 3600e3);
+    const day = d.toISOString().slice(0, 10);
+    const h = d.getUTCHours(), mi = d.getUTCMinutes();
+    const t = `${h < 12 ? '오전' : h < 18 ? '오후' : '저녁'} ${h % 12 || 12}시${mi ? ` ${mi}분` : ''}`;
+    return `${day === kstToday() ? '오늘' : fmt(day)} ${t}`;
+  };
   // 다음 토요일 모임 (오늘이 토요일이면 오늘)
   function nextMeeting(today = kstToday()) {
     const first = addDays(S.start, 5);
@@ -142,6 +158,6 @@
       <p>학습 기록은 이 브라우저에만 저장되고 운영자에게 전송되지 않습니다. <a href="my.html">내 기록·백업</a> · <a href="start.html">시작 준비</a> · 문의 <a href="mailto:${esc(S.email)}">${esc(S.email)}</a> · <a href="${esc(S.threadsUrl)}" rel="noopener" target="_blank">스레드</a></p></div>`;
   }
 
-  window.GTL = { S, C, STAGES, DOMAINS, DAY, esc, rich, kstToday, daysBetween, addDays, fmt, fmtShort, cohortNow, missionDate, nextMeeting,
+  window.GTL = { S, C, STAGES, DOMAINS, DAY, esc, rich, kstToday, daysBetween, addDays, fmt, fmtShort, cohortNow, missionDate, nextMeeting, recruitState, openLabel,
     store, isDone, progress, qKey, domainOf, questions, stats, reviewQueue, weakSkills, nextMission, header };
 })();

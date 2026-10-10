@@ -6,7 +6,9 @@ window.SITE = {
   cohort: '1기',
   // recruiting(모집 중) · running(진행 중) · break(다음 기수 준비 중)
   status: 'recruiting',
-  recruitEnd: '2026-10-11',     // 모집 마감
+  recruitOpen: '2026-10-10T20:00:00+09:00', // 신청 시작 시각(한국 시간). 이 전에는 남은 시간을 보여 줘요
+  recruitEnd: '2026-10-11',     // 모집 마감일
+  recruitEndTime: '밤 9시',      // 마감 시각 표시
   orientation: '2026-10-17',    // 오리엔테이션(토). 시작 뒤 첫 토요일이면 첫 모임과 함께 해요
   start: '2026-10-12',          // 1주차 월요일
   levelWeeks: 6,

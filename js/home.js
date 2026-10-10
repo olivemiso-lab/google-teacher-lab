@@ -14,7 +14,10 @@
   if (S.status === 'recruiting') {
     pill.textContent = (S.full || []).length >= 3
       ? `${S.cohort} 함께반 정원 마감 · 혼자 도전 신청 가능`
-      : `${S.cohort} 모집 중 · ${fmt(S.recruitEnd)} 마감`;
+      : (() => { const r = window.GTL.recruitState();
+          if (r.state === 'before') return `${S.cohort} 신청 ${window.GTL.openLabel()} 시작 · ${fmt(S.recruitEnd)} ${S.recruitEndTime || ''} 마감`;
+          if (r.state === 'closed') return `${S.cohort} 신청 마감 · 혼자 도전은 계속 받아요`;
+          return `${S.cohort} 신청 받는 중 · ${fmt(S.recruitEnd)} ${S.recruitEndTime || ''} 마감`; })();
     cta.textContent = `${S.cohort} 신청하기`;
   } else if (S.status === 'running') {
     pill.textContent = now.phase === 'running' ? `${S.cohort} 진행 중 · ${now.week}주차` : `${S.cohort} 진행 중`;
@@ -61,7 +64,8 @@
   const sat = (w) => addDays(S.start, (w - 1) * 7 + 5);
   const otFirst = S.orientation === sat(1); // 오리엔테이션을 첫 토요일 모임과 같이 하는 경우
   const rows = [
-    [S.recruitEnd, '모집 마감'],
+    ...(S.recruitOpen ? [[S.recruitOpen.slice(0, 10), '신청 시작 · ' + window.GTL.openLabel().replace(/^오늘 /, '')]] : []),
+    [S.recruitEnd, `모집 마감 · ${S.recruitEndTime || ''}`],
     [S.orientation, `${otFirst ? '첫 토요일 모임 · 오리엔테이션' : '오리엔테이션'} · ${S.meeting.time.split(' ~')[0]} · 2~3명씩 짝 정하기`],
     [S.start, '1주차 시작 · 첫 미션이 열려요'],
     ...(otFirst ? [] : [[sat(1), '첫 토요일 모임']]),
