@@ -50,7 +50,7 @@
     <section class="panel" data-p="0">
       ${block('📋', '상황', `<p style="margin:0">${rich(m.scenario)}</p>`)}
       ${materialHtml(m.material)}
-      <p class="note green small"><b>연습 계정</b>은 시크릿 창에서 엽니다. 이 페이지는 일반 창에서 열어야 기록이 저장됩니다. <a href="start.html#account">연습 계정 준비</a></p>
+      <p class="note green small"><b>연습 계정</b>은 크롬 프로필이나 시크릿 창으로 따로 엽니다. 이 페이지는 평소 쓰는 창에서 열어야 기록이 저장됩니다. <a href="start.html#account">연습 계정 준비</a></p>
     </section>
 
     <section class="panel" data-p="1" hidden>
