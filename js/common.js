@@ -171,7 +171,7 @@
     tabbar.innerHTML = TABS.map(([href, icon, label]) => `<a href="${href}"${current === href ? ' aria-current="page"' : ''}><span aria-hidden="true">${icon}</span>${label}${href === 'review.html' && q ? `<i class="badge">${q}</i>` : ''}</a>`).join('');
     document.body.appendChild(tabbar);
     document.getElementById('foot').innerHTML = `<div class="wrap">
-      <p>${esc(S.name)}는 Google과 관계없는 교사들의 독립 스터디입니다. 인증 시험 형식·비용·절차는 바뀔 수 있으니 응시 전에 꼭 공식 페이지에서 확인하세요. 실제 시험 문항은 다루지 않습니다.</p>
+      <p>${esc(S.name)}는 Google 공식 과정이 아니며, 교사가 운영하는 스터디입니다. 인증 시험 형식·비용·절차는 바뀔 수 있으니 응시 전에 꼭 공식 페이지에서 확인하세요. 실제 시험 문항은 다루지 않습니다.</p>
       <p>학습 기록은 이 브라우저에만 저장되고 운영자에게 전송되지 않습니다. <a href="my.html">내 기록·백업</a> · <a href="start.html">시작 준비</a> · 문의 <a href="mailto:${esc(S.email)}">${esc(S.email)}</a> · <a href="${esc(S.threadsUrl)}" rel="noopener" target="_blank">스레드</a></p></div>`;
   }
 

@@ -2,7 +2,7 @@
 // 날짜는 모두 한국 날짜(YYYY-MM-DD).
 window.SITE = {
   name: 'Google Teacher Lab',
-  subtitle: '교사들의 독립 스터디',
+  subtitle: 'Google 인증 준비 교사 스터디',
   cohort: '1기',
   // recruiting(모집 중) · running(진행 중) · break(다음 기수 준비 중)
   status: 'running',
