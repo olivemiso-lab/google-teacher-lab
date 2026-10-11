@@ -5,7 +5,7 @@ window.SITE = {
   subtitle: '교사들의 독립 스터디',
   cohort: '1기',
   // recruiting(모집 중) · running(진행 중) · break(다음 기수 준비 중)
-  status: 'recruiting',
+  status: 'running',
   recruitOpen: '2026-10-10T20:00:00+09:00', // 신청 시작 시각(한국 시간). 이 전에는 남은 시간을 보여 줘요
   recruitEnd: '2026-10-11',     // 모집 마감일
   recruitEndTime: '밤 9시',      // 마감 시각 표시
@@ -18,6 +18,7 @@ window.SITE = {
   capacity: 'Trainer반 8명 · Level 1·2반 각 10명 내외', // 비우면 표시 안 함
   // 정원이 찬 반을 넣으면 신청 페이지에 '혼자 도전' 안내가 강조돼요. 예: ['trainer'] / 모두 차면 ['level1', 'level2', 'trainer']
   full: [],
+  lateJoinUntil: '2026-10-24',  // 진행 중 이 날짜(2주차 토요일)까지는 중간 합류 신청을 받아요
   formUrl: 'https://forms.gle/iXYuCoBNzi985Rve9', // 구글 설문지 신청 링크. 비우면 '준비 중'으로 표시
   threadsUrl: 'https://www.threads.com/@olivece2017',
   email: 'ggteacherlab@gmail.com',

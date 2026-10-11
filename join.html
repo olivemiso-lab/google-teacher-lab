@@ -96,6 +96,9 @@
     };
     apply.innerHTML = `<span class="btn primary" aria-disabled="true" style="opacity:.85;cursor:default">⏰ ${window.GTL.openLabel()} 신청 시작</span><span class="small">남은 시간 <b id="countdown"></b></span>`;
     out(); setInterval(out, 1000);
+  } else if (S.status === 'running' && S.formUrl && S.lateJoinUntil && window.GTL.kstToday() <= S.lateJoinUntil) {
+    document.getElementById('lead').textContent = '현재 기수가 진행 중입니다. 2주차까지는 중간 합류 신청을 받습니다. 지난 미션은 언제든 이어서 할 수 있습니다.';
+    apply.innerHTML = '<a class="btn primary" href="' + esc(S.formUrl) + '" target="_blank" rel="noopener">중간 합류 신청 ↗</a><span class="tiny">' + fmt(S.lateJoinUntil) + '까지</span>';
   } else if (rs.state === 'closed' && S.formUrl) {
     pill.textContent = `${S.cohort} 함께반 신청 마감 · 혼자 도전·대기 신청 가능`;
     apply.innerHTML = `<a class="btn primary" href="${esc(S.formUrl)}" target="_blank" rel="noopener">혼자 도전·대기 신청 ↗</a><span class="tiny">마감 후 신청은 혼자 도전으로 등록되며, 함께반 결원 시 순서대로 연락합니다</span>`;
