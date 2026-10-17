@@ -55,7 +55,7 @@
 
     <section class="panel" data-p="1" hidden>
       ${block('✍️', '지시사항', `<p class="tiny" style="margin:-4px 0 8px">하나씩 수행하고 체크하세요. 시험의 실습 시나리오와 같은 방식입니다.</p><div id="steps">${m.steps.map((s, i) => `<label class="check" style="margin:6px 0"><input type="checkbox" data-s="${i}"><span>${rich(s)}</span></label>`).join('')}</div>
-        ${m.type !== 'daily' ? `<div class="btns" style="margin-top:12px"><button class="btn small" id="timer">⏱ ${m.minutes}분 타이머 시작</button><span class="small" id="timer-out" role="timer"></span></div>` : ''}
+        ${m.type !== 'daily' ? `<p class="note warn small" style="margin:12px 0 0">시험처럼 하려면 연습 계정을 <b>영어 화면</b>으로 두고, 자동 번역 없이 이름과 문구를 지시대로 정확히 입력하세요.</p><div class="btns" style="margin-top:12px"><button class="btn small" id="timer">⏱ ${m.minutes}분 타이머 시작</button><span class="small" id="timer-out" role="timer"></span></div>` : ''}
         ${video ? `<p style="margin:12px 0 0"><a class="btn small" href="${esc(video)}" target="_blank" rel="noopener">▶ 영상으로 보기</a></p>` : ''}`)}
       ${m.tip ? `<details class="card block"><summary style="cursor:pointer;font-weight:700">💡 막히면 도움말 보기</summary><p style="margin:10px 0 0">${rich(m.tip)}</p></details>` : ''}
       ${m.limit ? `<p class="note warn small">⚠️ ${rich(m.limit)}</p>` : ''}
