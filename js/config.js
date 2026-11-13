@@ -1,8 +1,8 @@
 // 운영자가 직접 고치는 설정. 기수가 바뀌면 이 파일만 고치면 된다.
 // 날짜는 모두 한국 날짜(YYYY-MM-DD).
 window.SITE = {
-  version: '20261114-0830', // node tools/bump-version.mjs 가 정해요. 손으로 고치지 않아요
-  updateNote: '모든 페이지가 같은 디자인으로 바뀌었습니다.', // 업데이트 안내에 함께 보일 한 줄 (bump-version이 채워요)
+  version: '20261114-0845', // node tools/bump-version.mjs 가 정해요. 손으로 고치지 않아요
+  updateNote: '운영자 소개가 바뀌었습니다.', // 업데이트 안내에 함께 보일 한 줄 (bump-version이 채워요)
   name: 'Google Teacher Lab',
   subtitle: 'Google 인증 준비 교사 스터디',
   cohort: '', // 기수 이름(예: '1기'). 비우면 화면에 기수를 표시하지 않아요
@@ -36,8 +36,8 @@ window.SITE = {
   email: 'ggteacherlab@gmail.com',
   leader: {
     name: '심쿵쌤',
-    line: '22년차 초등교사',
-    badges: ['Google 공인 교육자 Level 2', 'Gemini 공인 교육자', '2025 수업혁신교사상'],
+    line: '24년차 초등교사',
+    badges: ['Google 공인 교육자 Level 2', 'Gemini 공인 교육자', '2024 경기도교육청 미래교육 유공', '2025 교육부 수업혁신교사상'],
     note: 'Google 공인 트레이너 과정을 준비하며 이 스터디를 운영합니다.',
   },
 };
