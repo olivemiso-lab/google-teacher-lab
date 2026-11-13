@@ -1,6 +1,8 @@
 // 운영자가 직접 고치는 설정. 기수가 바뀌면 이 파일만 고치면 된다.
 // 날짜는 모두 한국 날짜(YYYY-MM-DD).
 window.SITE = {
+  version: '20261114-0814', // node tools/bump-version.mjs 가 정해요. 손으로 고치지 않아요
+  updateNote: '메인 디자인이 바뀌고 토요일 온라인 스터디와 오픈채팅방 안내가 생겼습니다.', // 업데이트 안내에 함께 보일 한 줄 (bump-version이 채워요)
   name: 'Google Teacher Lab',
   subtitle: 'Google 인증 준비 교사 스터디',
   cohort: '', // 기수 이름(예: '1기'). 비우면 화면에 기수를 표시하지 않아요

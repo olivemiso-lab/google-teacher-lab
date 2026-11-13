@@ -178,3 +178,39 @@
   window.GTL = { S, C, STAGES, DOMAINS, DAY, esc, rich, kstToday, daysBetween, addDays, fmt, fmtShort, cohortNow, missionDate, nextMeeting, recruitState, openLabel,
     store, isDone, isPracticed, quizDone, weakness, progress, qKey, domainOf, questions, stats, reviewQueue, weakSkills, nextMission, header };
 })();
+
+// ── 새 버전 알림: 사이트가 바뀌면 새 버전으로 다시 열고 "업데이트되었습니다" 안내를 띄운다
+(function () {
+  if (typeof document === 'undefined' || typeof location === 'undefined') return;
+  const S = window.SITE || {};
+  const KEY = 'gtl.seenVersion', FLAG = 'gtl.justUpdated';
+  const ls = (k, v) => { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } };
+  const ss = (k, v) => { try { if (v === undefined) return sessionStorage.getItem(k); if (v === null) sessionStorage.removeItem(k); else sessionStorage.setItem(k, v); } catch (e) { return null; } };
+  function toast(note) {
+    const t = document.createElement('div');
+    t.className = 'update-toast'; t.setAttribute('role', 'status');
+    t.innerHTML = '<b>사이트가 업데이트되었습니다</b>' + (note ? '<span></span>' : '') + '<button type="button" aria-label="닫기">×</button>';
+    if (note) t.querySelector('span').textContent = note;
+    t.querySelector('button').onclick = () => t.remove();
+    document.body.appendChild(t);
+    setTimeout(() => t.classList.add('out'), 6000);
+    setTimeout(() => t.remove(), 6600);
+  }
+  function show() {
+    const just = ss(FLAG);
+    if (just) { ss(FLAG, null); toast(just); }
+    else if (S.version && ls(KEY) && ls(KEY) !== S.version && S.updateNote) toast(S.updateNote);
+    if (S.version) ls(KEY, S.version);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', show); else show();
+  // 지금 연 화면이 예전 버전이면 새 버전으로 한 번 다시 연다
+  if (!S.version || !window.fetch || location.protocol === 'file:') return;
+  fetch('version.json?t=' + Date.now(), { cache: 'no-store' }).then((r) => r.ok ? r.json() : null).then((d) => {
+    if (!d || !d.v || d.v === S.version) return;
+    const u = new URL(location.href);
+    if (u.searchParams.get('v') === d.v) return; // 이미 한 번 다시 열었는데도 다르면 멈춤
+    u.searchParams.set('v', d.v);
+    ss(FLAG, d.note || ' ');
+    location.replace(u.toString());
+  }).catch(() => {});
+})();

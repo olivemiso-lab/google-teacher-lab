@@ -406,3 +406,11 @@ h2 { letter-spacing: -0.02em; }
   .bau .hero { padding-top: 130px; }
 }
 .ask[hidden], .bau-shapes[hidden] { display: none; }
+
+/* 업데이트 안내 */
+.update-toast { width: max-content; position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 50; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; max-width: min(92vw, 520px);
+  background: #141414; color: #fff; padding: 12px 44px 12px 16px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,.2); font-size: .92rem; transition: opacity .5s; }
+.update-toast span { opacity: .85; }
+.update-toast button { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: 0; color: #fff; font-size: 1.3rem; cursor: pointer; padding: 4px 8px; }
+.update-toast.out { opacity: 0; }
+@media (max-width: 640px) { .update-toast { bottom: 84px; } }
