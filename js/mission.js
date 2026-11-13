@@ -43,7 +43,7 @@
         ${m.tools.map((t) => `<span class="tag" style="border:1px solid var(--line)">${esc(t)}</span>`).join('')}
       </div>
       <h1 style="font-size:1.6rem">${esc(m.title)}</h1>
-      <p class="tiny">${S.cohort} 달력 ${fmt(missionDate(m))} · 공식 평가 목표 ${esc(m.objectives.join(', '))}</p>
+      <p class="tiny">${S.cohort ? S.cohort + ' ' : ''}달력 ${fmt(missionDate(m))} · 공식 평가 목표 ${esc(m.objectives.join(', '))}</p>
     </div>
     <ol class="stepper" id="stepper">${STEPS.map((s, i) => `<li><button data-go="${i}">${i + 1}. ${s}</button></li>`).join('')}</ol>
 

@@ -13,17 +13,17 @@
   const cta = document.getElementById('hero-cta');
   if (S.status === 'recruiting') {
     pill.textContent = (S.full || []).length >= 3
-      ? `${S.cohort} 함께반 정원 마감 · 혼자 도전 신청 가능`
+      ? `${S.cohort ? S.cohort + ' ' : ''}함께반 정원 마감 · 혼자 도전 신청 가능`
       : (() => { const r = window.GTL.recruitState();
-          if (r.state === 'before') return `${S.cohort} 신청 ${window.GTL.openLabel()} 시작 · ${fmt(S.recruitEnd)} ${S.recruitEndTime || ''} 마감`;
-          if (r.state === 'closed') return `${S.cohort} 함께반 신청 마감 · 혼자 도전 신청 가능`;
-          return `${S.cohort} 신청 받는 중 · ${fmt(S.recruitEnd)} ${S.recruitEndTime || ''} 마감`; })();
-    cta.textContent = `${S.cohort} 신청하기`;
+          if (r.state === 'before') return `${S.cohort ? S.cohort + ' ' : ''}신청 ${window.GTL.openLabel()} 시작 · ${fmt(S.recruitEnd)} ${S.recruitEndTime || ''} 마감`;
+          if (r.state === 'closed') return `${S.cohort ? S.cohort + ' ' : ''}함께반 신청 마감 · 혼자 도전 신청 가능`;
+          return `${S.cohort ? S.cohort + ' ' : ''}신청 받는 중 · ${fmt(S.recruitEnd)} ${S.recruitEndTime || ''} 마감`; })();
+    cta.textContent = `${S.cohort ? S.cohort + ' ' : ''}신청하기`;
   } else if (S.status === 'running') {
-    pill.textContent = now.phase === 'running' ? `${S.cohort} 진행 중 · ${now.week}주차` : `${S.cohort} 진행 중`;
+    pill.textContent = now.phase === 'running' ? `${S.cohort ? S.cohort + ' ' : ''}진행 중 · ${now.week}주차` : `${S.cohort ? S.cohort + ' ' : ''}진행 중`;
     cta.textContent = '참여 안내';
   } else {
-    pill.textContent = '다음 기수 준비 중';
+    pill.textContent = '다음 모집 준비 중';
     cta.textContent = '소식 받기';
   }
   const facts = [`${fmt(S.start)} 시작`, `매주 ${S.meeting.day} ${S.meeting.time}`, S.meeting.place, '무료'];
@@ -72,7 +72,7 @@
     [sat(S.levelWeeks), `Level 1·2반 마지막 모임 · ${S.levelWeeks}주 마무리`],
     [sat(S.trainerWeeks), `Trainer반 마지막 모임 · 지원서 서로 읽기`],
   ];
-  document.getElementById('sched-title').textContent = `${S.cohort} 일정`;
+  document.getElementById('sched-title').textContent = `${S.cohort ? S.cohort + ' ' : ''}일정`;
   document.getElementById('sched').innerHTML = rows.sort((a, b) => a[0].localeCompare(b[0])).map(([d, t]) =>
     `<li${d < today ? ' class="muted"' : ''}><span class="when">${fmtShort(d)}</span><span>${esc(t)}</span></li>`).join('');
 
@@ -92,7 +92,7 @@
 
   if (now.phase === 'before') {
     if (now.daysLeft <= 60) {
-      document.getElementById('today-title').textContent = `${S.cohort} 시작까지 ${now.daysLeft}일 · 1주차 미리 보기`;
+      document.getElementById('today-title').textContent = `${S.cohort ? S.cohort + ' ' : ''}시작까지 ${now.daysLeft}일 · 1주차 미리 보기`;
       box.innerHTML = tracks.map((t) => card(find(t, 1, 1), '1주차 월요일')).join('');
       sec.hidden = false;
     }
@@ -128,7 +128,7 @@
   const meet = nextMeeting(today);
   const dday = daysBetween(today, meet);
   const meetText = dday === 0 ? '오늘 밤 9시' : `${fmt(meet)} 밤 9시 · D-${dday}`;
-  const where = now.phase === 'before' ? `${S.cohort} 시작까지 ${now.daysLeft}일` : now.levelDone && stage !== 'trainer' ? '과정을 모두 마쳤어요 · 자유 복습' : `${now.week}주차 ${'월화수목금토일'[now.dow - 1]}요일`;
+  const where = now.phase === 'before' ? `${S.cohort ? S.cohort + ' ' : ''}시작까지 ${now.daysLeft}일` : now.levelDone && stage !== 'trainer' ? '과정을 모두 마쳤어요 · 자유 복습' : `${now.week}주차 ${'월화수목금토일'[now.dow - 1]}요일`;
   document.getElementById('landing-hero').hidden = true;
   document.getElementById('today-sec').hidden = true;
   document.getElementById('pick-title').textContent = '단계 바꾸기';

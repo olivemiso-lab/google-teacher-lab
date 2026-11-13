@@ -69,7 +69,7 @@
     <div class="card" style="margin-bottom:20px">
       <div class="week-head"><h2 style="margin:0">🎓 Trainer · ${S.trainerWeeks}주</h2>${pickButton()}</div>
       <p class="muted">${S.trainerWeeks}주 동안 지원서 준비를 마치는 것이 목표입니다. Level 1·2 인증이 있거나 곧 응시할 예정이면 적합합니다.</p>
-      <p class="note small" style="margin:0">트레이너 지원에는 최근 1년간 직접 이끈 Google 관련 연수·활동 3~5개가 필요해요. 이 경험을 처음부터 쌓아야 한다면 Level 2반과 함께 시작해서 다음 기수에 Trainer반으로 오는 걸 추천해요. 스터디 미니 연수가 공식 사례로 인정되는지는 Google이 판단해요.</p>
+      <p class="note small" style="margin:0">트레이너 지원에는 최근 1년간 직접 이끈 Google 관련 연수·활동 3~5개가 필요해요. 이 경험을 처음부터 쌓아야 한다면 Level 2반과 함께 시작해서 다음 모집 때 Trainer반으로 오는 걸 추천해요. 스터디 미니 연수가 공식 사례로 인정되는지는 Google이 판단해요.</p>
     </div>
     <h2>주차별 계획</h2>
     <div class="grid g2" style="margin-bottom:28px">

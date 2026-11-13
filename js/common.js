@@ -161,7 +161,7 @@
   ];
   function header(current) {
     const nav = TABS.map(([href, , label]) => `<a href="${href}"${current === href ? ' aria-current="page"' : ''}>${label}</a>`).join('');
-    const cta = `<a class="cta" href="join.html"${current === 'join.html' ? ' aria-current="page"' : ''}>${S.status === 'recruiting' ? S.cohort + ' 신청' : '참여 안내'}</a>`;
+    const cta = `<a class="cta" href="join.html"${current === 'join.html' ? ' aria-current="page"' : ''}>${S.status === 'recruiting' ? (S.cohort ? S.cohort + ' ' : '') + '신청' : '참여 안내'}</a>`;
     const q = reviewQueue().length;
     document.getElementById('top').innerHTML = `<div class="wrap">
       <a class="brand" href="index.html"><span class="logo" aria-hidden="true">G</span><b>${esc(S.name)}</b><span class="sub">${esc(S.subtitle)}</span></a>

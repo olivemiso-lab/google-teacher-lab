@@ -25,7 +25,7 @@
     <p class="muted small" id="solo-full" hidden></p>
     <div class="grid g2" style="margin-top:8px">
       <div><b class="small">🙋 함께반 (정원 안)</b><ul class="checks small"><li>사이트 미션</li><li>카톡 질문방</li><li>토요일 밤 Meet 모임 · 짝</li></ul></div>
-      <div><b class="small">🧭 혼자 도전 (정원 밖)</b><ul class="checks small"><li>사이트 미션</li><li>카톡 질문방</li><li>다음 기수 모집 때 먼저 연락</li></ul></div>
+      <div><b class="small">🧭 혼자 도전 (정원 밖)</b><ul class="checks small"><li>사이트 미션</li><li>카톡 질문방</li><li>다음 모집 때 먼저 연락</li></ul></div>
     </div>
     <p class="tiny" style="margin:8px 0 0">함께반은 '토요일 밤 9시 참여 가능'에 '예'로 답한 신청자 중 신청 순서대로 정합니다. 결원이 생기면 대기 순서대로 연락합니다.</p>
   </section>
@@ -40,7 +40,7 @@
       <li>Meet 초대를 받을 이메일과 부를 이름(별명 가능)</li>
     </ul>
     <p class="note green small">신청자에게 Meet 링크와 <b>카카오톡 오픈채팅 질문방</b> 링크를 이메일로 보냅니다.</p>
-    <p class="tiny">신청서 내용은 이번 기수 운영에만 사용하고 기수 종료 후 삭제합니다. 학교 이름과 전화번호는 받지 않습니다.</p>
+    <p class="tiny">신청서 내용은 이번 스터디 운영에만 사용하고 스터디가 끝나면 삭제합니다. 학교 이름과 전화번호는 받지 않습니다.</p>
   </section>
 
   <section>
@@ -66,15 +66,15 @@
   const meetAt = `${S.meeting.day} ${S.meeting.time.split(' ~')[0]}`;
   const pill = document.getElementById('pill');
   if (S.status === 'recruiting') {
-    pill.textContent = `${S.cohort} 모집 중 · ${fmt(S.recruitEnd)} 마감`;
-    document.getElementById('title').textContent = `${S.cohort} 신청하기`;
+    pill.textContent = `${S.cohort ? S.cohort + ' ' : ''}모집 중 · ${fmt(S.recruitEnd)} 마감`;
+    document.getElementById('title').textContent = `${S.cohort ? S.cohort + ' ' : ''}신청하기`;
     document.getElementById('lead').textContent = 'Level 1, Level 2, Trainer 과정 중 하나를 골라 신청합니다. 인증이 없으면 Level 1로 신청하세요.';
   } else if (S.status === 'running') {
-    pill.textContent = `${S.cohort} 진행 중`;
-    document.getElementById('lead').textContent = '현재 기수 진행 중입니다. 미션은 누구나 열람할 수 있으며, 다음 기수 모집은 스레드에서 안내합니다.';
+    pill.textContent = `${S.cohort ? S.cohort + ' ' : ''}진행 중`;
+    document.getElementById('lead').textContent = '지금 스터디가 진행 중입니다. 미션은 누구나 열람할 수 있으며, 다음 모집은 스레드에서 안내합니다.';
   } else {
-    pill.textContent = '다음 기수 준비 중';
-    document.getElementById('lead').textContent = '다음 기수 모집은 스레드에서 안내합니다.';
+    pill.textContent = '다음 모집 준비 중';
+    document.getElementById('lead').textContent = '다음 모집은 스레드에서 안내합니다.';
   }
   const rows = [
     ['기간', `${fmt(S.start)}부터 · Level반 ${S.levelWeeks}주, Trainer반 ${S.trainerWeeks}주`],
@@ -87,7 +87,7 @@
   const apply = document.getElementById('apply');
   const rs = window.GTL.recruitState();
   if (rs.state === 'before') {
-    pill.textContent = `${S.cohort} 신청 ${window.GTL.openLabel()} 시작`;
+    pill.textContent = `${S.cohort ? S.cohort + ' ' : ''}신청 ${window.GTL.openLabel()} 시작`;
     const out = () => {
       const r = window.GTL.recruitState();
       if (r.state !== 'before') { location.reload(); return; }
@@ -97,14 +97,14 @@
     apply.innerHTML = `<span class="btn primary" aria-disabled="true" style="opacity:.85;cursor:default">⏰ ${window.GTL.openLabel()} 신청 시작</span><span class="small">남은 시간 <b id="countdown"></b></span>`;
     out(); setInterval(out, 1000);
   } else if (S.status === 'running' && S.formUrl && S.lateJoinUntil && window.GTL.kstToday() <= S.lateJoinUntil) {
-    document.getElementById('lead').textContent = '현재 기수가 진행 중입니다. 2주차까지는 중간 합류 신청을 받습니다. 지난 미션은 언제든 이어서 할 수 있습니다.';
+    document.getElementById('lead').textContent = '지금 스터디가 진행 중입니다. 2주차까지는 중간 합류 신청을 받습니다. 지난 미션은 언제든 이어서 할 수 있습니다.';
     apply.innerHTML = '<a class="btn primary" href="' + esc(S.formUrl) + '" target="_blank" rel="noopener">중간 합류 신청 ↗</a><span class="tiny">' + fmt(S.lateJoinUntil) + '까지</span>';
   } else if (rs.state === 'closed' && S.formUrl) {
-    pill.textContent = `${S.cohort} 함께반 신청 마감 · 혼자 도전·대기 신청 가능`;
+    pill.textContent = `${S.cohort ? S.cohort + ' ' : ''}함께반 신청 마감 · 혼자 도전·대기 신청 가능`;
     apply.innerHTML = `<a class="btn primary" href="${esc(S.formUrl)}" target="_blank" rel="noopener">혼자 도전·대기 신청 ↗</a><span class="tiny">마감 후 신청은 혼자 도전으로 등록되며, 함께반 결원 시 순서대로 연락합니다</span>`;
   } else if (rs.state === 'open' && S.formUrl) {
-    pill.textContent = `${S.cohort} 신청 받는 중 · ${fmt(S.recruitEnd)} ${S.recruitEndTime || ''} 마감`;
-    apply.innerHTML = `<a class="btn primary" href="${esc(S.formUrl)}" target="_blank" rel="noopener">${S.cohort} 신청서 쓰기 ↗</a><span class="tiny">Google 설문지로 이동합니다</span>`;
+    pill.textContent = `${S.cohort ? S.cohort + ' ' : ''}신청 받는 중 · ${fmt(S.recruitEnd)} ${S.recruitEndTime || ''} 마감`;
+    apply.innerHTML = `<a class="btn primary" href="${esc(S.formUrl)}" target="_blank" rel="noopener">${S.cohort ? S.cohort + ' ' : ''}신청서 쓰기 ↗</a><span class="tiny">Google 설문지로 이동합니다</span>`;
   } else {
     apply.innerHTML = `<a class="btn primary" href="${esc(S.threadsUrl)}" target="_blank" rel="noopener">스레드에서 소식 받기 ↗</a><span class="tiny">${S.status === 'recruiting' ? '신청서 준비 중' : ''}</span>`;
   }
@@ -112,7 +112,7 @@
   const full = (S.full || []).filter((k) => NAME[k]);
   if (S.status === 'recruiting' && full.length) {
     const all = full.length === 3;
-    pill.textContent = all ? `${S.cohort} 함께반 정원 마감 · 혼자 도전 신청 가능` : pill.textContent;
+    pill.textContent = all ? `${S.cohort ? S.cohort + ' ' : ''}함께반 정원 마감 · 혼자 도전 신청 가능` : pill.textContent;
     document.getElementById('solo').classList.add('is-now');
     document.getElementById('solo-title').textContent = all ? '함께반 정원 마감' : '일부 과정 정원 마감';
     const f = document.getElementById('solo-full');

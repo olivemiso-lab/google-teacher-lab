@@ -3,7 +3,7 @@
 window.SITE = {
   name: 'Google Teacher Lab',
   subtitle: 'Google 인증 준비 교사 스터디',
-  cohort: '1기',
+  cohort: '', // 기수 이름(예: '1기'). 비우면 화면에 기수를 표시하지 않아요
   // recruiting(모집 중) · running(진행 중) · break(다음 기수 준비 중)
   status: 'running',
   recruitOpen: '2026-10-10T20:00:00+09:00', // 신청 시작 시각(한국 시간). 이 전에는 남은 시간을 보여 줘요
