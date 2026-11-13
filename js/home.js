@@ -13,10 +13,10 @@
   const cta = document.getElementById('hero-cta');
   if (S.status === 'recruiting') {
     pill.textContent = (S.full || []).length >= 3
-      ? `${S.cohort ? S.cohort + ' ' : ''}함께반 정원 마감 · 혼자 도전 신청 가능`
+      ? `${S.cohort ? S.cohort + ' ' : ''}신청 마감`
       : (() => { const r = window.GTL.recruitState();
           if (r.state === 'before') return `${S.cohort ? S.cohort + ' ' : ''}신청 ${window.GTL.openLabel()} 시작 · ${fmt(S.recruitEnd)} ${S.recruitEndTime || ''} 마감`;
-          if (r.state === 'closed') return `${S.cohort ? S.cohort + ' ' : ''}함께반 신청 마감 · 혼자 도전 신청 가능`;
+          if (r.state === 'closed') return `${S.cohort ? S.cohort + ' ' : ''}신청 마감`;
           return `${S.cohort ? S.cohort + ' ' : ''}신청 받는 중 · ${fmt(S.recruitEnd)} ${S.recruitEndTime || ''} 마감`; })();
     cta.textContent = `${S.cohort ? S.cohort + ' ' : ''}신청하기`;
   } else if (S.status === 'running') {
@@ -26,7 +26,7 @@
     pill.textContent = '다음 모집 준비 중';
     cta.textContent = '소식 받기';
   }
-  const facts = [`${fmt(S.start)} 시작`, `매주 ${S.meeting.day} ${S.meeting.time}`, S.meeting.place, '무료'];
+  const facts = [`매주 ${S.meeting.day} ${S.meeting.time}`, `${S.meeting.place} 온라인 스터디`, '무료'];
   if (S.capacity) facts.push(S.capacity);
   document.getElementById('facts').innerHTML = facts.map((f) => `<li>${esc(f)}</li>`).join('');
   document.getElementById('meet-day').textContent = meetShort;
@@ -35,8 +35,8 @@
   // 단계 카드
   const mine = store.get().stage;
   const detail = {
-    level1: ['실습 미션 30개', '판단 문제 90개, 모의고사', '토요일 정기 모임'],
-    level2: ['심화 실습 미션 30개', '판단 문제 90개, 모의고사', '토요일 정기 모임'],
+    level1: ['실습 미션 30개', '판단 문제 90개, 모의고사', '토요일 온라인 스터디'],
+    level2: ['심화 실습 미션 30개', '판단 문제 90개, 모의고사', '토요일 온라인 스터디'],
     trainer: ['트레이너 과정과 역량 평가', '2~3분 시연 영상', '활동 기록과 지원서'],
   };
   const goal = { level1: '🏁 Level 1 시험 응시', level2: '🏁 Level 2 시험 응시', trainer: '🏁 트레이너 지원서 제출' };
@@ -59,22 +59,6 @@
       <ul class="chips">${L.badges.map((b) => `<li>${esc(b)}</li>`).join('')}</ul>
       <p class="muted small" style="margin:0">${esc(L.note)}</p>
       <p class="small" style="margin:8px 0 0"><a href="${esc(S.threadsUrl)}" target="_blank" rel="noopener">스레드에서 만나기 ↗</a></p></div>`;
-
-  // 기수 일정: 설정의 시작일에서 계산
-  const sat = (w) => addDays(S.start, (w - 1) * 7 + 5);
-  const otFirst = S.orientation === sat(1); // 오리엔테이션을 첫 토요일 모임과 같이 하는 경우
-  const rows = [
-    ...(S.recruitOpen ? [[S.recruitOpen.slice(0, 10), '신청 시작 · ' + window.GTL.openLabel().replace(/^오늘 /, '')]] : []),
-    [S.recruitEnd, `모집 마감 · ${S.recruitEndTime || ''}`],
-    [S.orientation, `${otFirst ? '첫 토요일 모임 · 오리엔테이션' : '오리엔테이션'} · ${S.meeting.time.split(' ~')[0]} · 2~3명씩 짝 정하기`],
-    [S.start, '1주차 시작'],
-    ...(otFirst ? [] : [[sat(1), '첫 토요일 모임']]),
-    [sat(S.levelWeeks), `Level 1·2반 마지막 모임 · ${S.levelWeeks}주 마무리`],
-    [sat(S.trainerWeeks), `Trainer반 마지막 모임 · 지원서 서로 읽기`],
-  ];
-  document.getElementById('sched-title').textContent = `${S.cohort ? S.cohort + ' ' : ''}일정`;
-  document.getElementById('sched').innerHTML = rows.sort((a, b) => a[0].localeCompare(b[0])).map(([d, t]) =>
-    `<li${d < today ? ' class="muted"' : ''}><span class="when">${fmtShort(d)}</span><span>${esc(t)}</span></li>`).join('');
 
   // 오늘 영역: 기수 시작 전에는 1주차 미리보기, 진행 중에는 오늘 미션
   const sec = document.getElementById('today-sec');
@@ -106,7 +90,7 @@
       box.innerHTML = tracks.map((t) => {
         const left = C.missions.filter((m) => m.track === t && m.week === now.week && !isDone(m.id));
         const p = progress(t, now.week);
-        return `<div class="card"><div class="m-meta"><span class="tag s-${t}">${STAGES[t].icon} ${STAGES[t].name}</span><span class="tag t-sun">${d === 6 ? '오늘 밤 모임' : '쉬는 날'}</span></div>
+        return `<div class="card"><div class="m-meta"><span class="tag s-${t}">${STAGES[t].icon} ${STAGES[t].name}</span><span class="tag t-sun">${d === 6 ? '오늘 밤 스터디' : '쉬는 날'}</span></div>
           <h3>${left.length ? `이번 주 남은 미션 ${left.length}개` : '이번 주 완료 🎉'}</h3>
           <ul class="checks small">${left.slice(0, 5).map((m) => `<li><a href="mission.html?id=${m.id}">${esc(m.title)}</a></li>`).join('')}</ul>
           <div class="bar" style="margin-top:10px" aria-label="지금까지 ${p.pct}%"><i style="width:${p.pct}%"></i></div>
@@ -144,7 +128,7 @@
         <div class="btns" style="margin-top:14px"><a class="btn" href="path.html?stage=trainer">로드맵 이어가기 →</a><a class="btn ghost" href="kit.html">준비 양식</a></div>
       </div><div class="ring" style="--p:${Math.round((done / 8) * 100)}"><b>${done}/8<small>로드맵</small></b></div></div>
       <div class="tiles" style="margin-top:14px">
-        <div class="tile"><div class="k">다음 모임</div><div class="v" style="font-size:1.15rem">${esc(meetText)}</div><div class="s">Google Meet</div></div>
+        <div class="tile"><div class="k">다음 스터디</div><div class="v" style="font-size:1.15rem">${esc(meetText)}</div><div class="s">Google Meet</div></div>
         <a class="tile" href="kit.html#plan"><div class="k">미니 연수 계획서</div><div class="v" style="font-size:1.15rem">양식 열기</div><div class="s">2주차까지</div></a>
         <a class="tile" href="kit.html#video"><div class="k">시연 영상</div><div class="v" style="font-size:1.15rem">2~3분</div><div class="s">체크리스트 →</div></a>
       </div>
@@ -175,7 +159,7 @@
       <div class="tile"><div class="k">${wk}주차 진행</div><div class="v">${weekDone}<small>/ ${weekList.length}</small></div><div class="s">${esc(C.weeks[stage][wk - 1])}</div></div>
       <div class="tile"><div class="k">판단 문제 정답률</div><div class="v">${s.answered ? s.pct + '%' : '–'}</div><div class="s">${s.answered ? `첫 시도 ${s.right}/${s.answered}` : '미션에서 풀 수 있습니다'}</div></div>
       <a class="tile" href="review.html?stage=${stage}"><div class="k">복습할 문제</div><div class="v">${q.length}</div><div class="s">${q.length ? '복습함 열기' : '틀린 문제가 모입니다'}</div></a>
-      <div class="tile"><div class="k">다음 모임</div><div class="v" style="font-size:1.15rem">${esc(meetText)}</div><div class="s">Google Meet</div></div>
+      <div class="tile"><div class="k">다음 스터디</div><div class="v" style="font-size:1.15rem">${esc(meetText)}</div><div class="s">Google Meet</div></div>
     </div>
 
     <div class="grid g2" style="margin-top:14px">
@@ -188,4 +172,43 @@
         <p class="small" style="margin:14px 0 0"><a href="my.html?stage=${stage}">📊 내 기록 전체 보기</a> · <a href="exam.html?stage=${stage}">📝 모의고사</a></p></div>
     </div>`;
   dash.hidden = false;
+})();
+
+// ── 토요일 모임: 이번 주 주제 + 지난 모임 (설정의 meetings에서)
+(function () {
+  const { S, esc, fmt, fmtShort, kstToday, daysBetween } = window.GTL;
+  const list = (S.meetings || []).slice().sort((a, b) => a.date.localeCompare(b.date));
+  if (!list.length) return;
+  const today = kstToday();
+  const next = list.find((m) => m.date >= today);
+  const past = list.filter((m) => m.date < today);
+  const time = S.meeting.time.split(' ~')[0];
+  let html = '';
+  if (next) {
+    const d = daysBetween(today, next.date);
+    const when = d === 0 ? `오늘 ${time}` : `${fmt(next.date)} ${time}`;
+    html += `<div class="meet-next">
+      <div class="meet-when"><span class="dday">${d === 0 ? 'TODAY' : 'D-' + d}</span><span>${esc(when)} · ${esc(S.meeting.place)}</span></div>
+      <h3>${esc(next.tool)}</h3>
+      ${next.note ? `<p class="muted">${esc(next.note)}</p>` : ''}
+      <ol class="meet-flow"><li>도구 공부</li><li>직접 눌러보기</li><li>모의고사 함께 풀기</li><li>함께 점검</li></ol>
+      ${next.prep && next.prep.length ? `<p class="small" style="margin:12px 0 0"><b>준비</b> ${next.prep.map(esc).join(' · ')}</p>` : ''}
+      <p class="tiny" style="margin:8px 0 0">미트 주소와 모의고사는 오픈채팅방에서 안내합니다.</p>
+    </div>`;
+  }
+  if (past.length) {
+    html += `<div class="meet-past"><h3>지난 스터디</h3><ol>${past.slice().reverse().map((m) =>
+      `<li><span class="when">${esc(fmtShort(m.date))}</span><span>${esc(m.tool)}</span></li>`).join('')}</ol></div>`;
+  }
+  document.getElementById('meet').innerHTML = html;
+  document.getElementById('meet-sec').hidden = false;
+})();
+
+// ── 오픈채팅방 안내 (설정에 주소가 있을 때만)
+(function () {
+  const { S } = window.GTL;
+  if (!S.chatUrl) return;
+  document.getElementById('ask-link').href = S.chatUrl;
+  document.getElementById('ask').hidden = false;
+  document.getElementById('meet-sec').hidden = false;
 })();

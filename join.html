@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>신청하기 · Google Teacher Lab</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232f6b4f'/%3E%3Ctext x='16' y='23' font-size='18' font-family='Arial' font-weight='900' text-anchor='middle' fill='%23fff'%3EG%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231A73E8'/%3E%3Ctext x='16' y='23' font-size='18' font-family='Arial' font-weight='900' text-anchor='middle' fill='%23fff'%3EG%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="css/style.css">
 </head>
@@ -20,23 +20,12 @@
     <div class="btns" style="margin-top:14px" id="apply"></div>
   </div>
 
-  <section class="card" id="solo" style="margin-bottom:32px">
-    <h2 style="font-size:1.15rem" id="solo-title">함께반과 혼자 도전</h2>
-    <p class="muted small" id="solo-full" hidden></p>
-    <div class="grid g2" style="margin-top:8px">
-      <div><b class="small">🙋 함께반 (정원 안)</b><ul class="checks small"><li>사이트 미션</li><li>카톡 질문방</li><li>토요일 밤 Meet 모임 · 짝</li></ul></div>
-      <div><b class="small">🧭 혼자 도전 (정원 밖)</b><ul class="checks small"><li>사이트 미션</li><li>카톡 질문방</li><li>다음 모집 때 먼저 연락</li></ul></div>
-    </div>
-    <p class="tiny" style="margin:8px 0 0">함께반은 '토요일 밤 9시 참여 가능'에 '예'로 답한 신청자 중 신청 순서대로 정합니다. 결원이 생기면 대기 순서대로 연락합니다.</p>
-  </section>
-
   <section>
     <h2>신청서에서 여쭤보는 것</h2>
     <ul class="checks">
       <li>지금 내 단계 (Level 1 / Level 2 / Trainer)</li>
-      <li>함께반(토요일 모임 포함)과 혼자 도전 중 원하는 방식</li>
       <li>Google 도구를 쓰면서 가장 막막한 점 한 가지</li>
-      <li id="ask-meet">토요일 밤 9시 모임 참여가 가능한지</li>
+      <li id="ask-meet">토요일 밤 9시 스터디 참여가 가능한지</li>
       <li>Meet 초대를 받을 이메일과 부를 이름(별명 가능)</li>
     </ul>
     <p class="note green small">신청자에게 Meet 링크와 <b>카카오톡 오픈채팅 질문방</b> 링크를 이메일로 보냅니다.</p>
@@ -49,7 +38,7 @@
       <li>평일 미션은 하나에 10~20분, 주당 2시간 안팎입니다. 밀린 미션은 이어서 할 수 있습니다.</li>
       <li>실습과 결과물에는 가상 이름과 연습 자료만 사용합니다. 학생 정보는 넣지 않습니다.</li>
       <li>실제 시험 문항과 기출 자료는 다루지 않습니다.</li>
-      <li>질문은 질문방에서 미션 번호와 함께 받고, 운영자는 수·금 저녁에 답변합니다.</li>
+      <li>질문은 오픈채팅방에서 미션 번호와 함께 받습니다. 운영자가 확인하는 대로 답하지만, 직장 생활을 함께 하고 있어 늦을 수 있습니다.</li>
     </ul>
   </section>
 
@@ -77,9 +66,8 @@
     document.getElementById('lead').textContent = '다음 모집은 스레드에서 안내합니다.';
   }
   const rows = [
-    ['기간', `${fmt(S.start)}부터 · Level반 ${S.levelWeeks}주, Trainer반 ${S.trainerWeeks}주`],
-    ['오리엔테이션', `${fmt(S.orientation)} ${S.meeting.time.split(' ~')[0]}${S.orientation > S.start ? ' · 첫 토요일 모임과 함께' : ''}`],
-    ['모임', `매주 ${S.meeting.day} ${S.meeting.time} · ${S.meeting.place}`],
+    ['방식', '평일에는 사이트 미션으로 스스로 연습, 토요일에는 온라인 스터디'],
+    ['스터디', `매주 ${S.meeting.day} ${S.meeting.time} · ${S.meeting.place}`],
     ['비용', '무료 (나이스 연수 이력 미등록)'],
   ];
   if (S.capacity) rows.push(['인원', S.capacity]);
@@ -100,26 +88,15 @@
     document.getElementById('lead').textContent = '지금 스터디가 진행 중입니다. 2주차까지는 중간 합류 신청을 받습니다. 지난 미션은 언제든 이어서 할 수 있습니다.';
     apply.innerHTML = '<a class="btn primary" href="' + esc(S.formUrl) + '" target="_blank" rel="noopener">중간 합류 신청 ↗</a><span class="tiny">' + fmt(S.lateJoinUntil) + '까지</span>';
   } else if (rs.state === 'closed' && S.formUrl) {
-    pill.textContent = `${S.cohort ? S.cohort + ' ' : ''}함께반 신청 마감 · 혼자 도전·대기 신청 가능`;
-    apply.innerHTML = `<a class="btn primary" href="${esc(S.formUrl)}" target="_blank" rel="noopener">혼자 도전·대기 신청 ↗</a><span class="tiny">마감 후 신청은 혼자 도전으로 등록되며, 함께반 결원 시 순서대로 연락합니다</span>`;
+    pill.textContent = `${S.cohort ? S.cohort + ' ' : ''}신청 마감`;
+    apply.innerHTML = `<a class="btn primary" href="${esc(S.threadsUrl)}" target="_blank" rel="noopener">스레드에서 소식 받기 ↗</a>`;
   } else if (rs.state === 'open' && S.formUrl) {
     pill.textContent = `${S.cohort ? S.cohort + ' ' : ''}신청 받는 중 · ${fmt(S.recruitEnd)} ${S.recruitEndTime || ''} 마감`;
     apply.innerHTML = `<a class="btn primary" href="${esc(S.formUrl)}" target="_blank" rel="noopener">${S.cohort ? S.cohort + ' ' : ''}신청서 쓰기 ↗</a><span class="tiny">Google 설문지로 이동합니다</span>`;
   } else {
     apply.innerHTML = `<a class="btn primary" href="${esc(S.threadsUrl)}" target="_blank" rel="noopener">스레드에서 소식 받기 ↗</a><span class="tiny">${S.status === 'recruiting' ? '신청서 준비 중' : ''}</span>`;
   }
-  const NAME = { level1: '🌱 Level 1반', level2: '🚀 Level 2반', trainer: '🎓 Trainer반' };
-  const full = (S.full || []).filter((k) => NAME[k]);
-  if (S.status === 'recruiting' && full.length) {
-    const all = full.length === 3;
-    pill.textContent = all ? `${S.cohort ? S.cohort + ' ' : ''}함께반 정원 마감 · 혼자 도전 신청 가능` : pill.textContent;
-    document.getElementById('solo').classList.add('is-now');
-    document.getElementById('solo-title').textContent = all ? '함께반 정원 마감' : '일부 과정 정원 마감';
-    const f = document.getElementById('solo-full');
-    f.textContent = `정원이 찬 반: ${full.map((k) => NAME[k]).join(', ')} · 신청서에서 '혼자 도전'을 선택하세요.`;
-    f.hidden = false;
-  }
-  document.getElementById('ask-meet').textContent = `${meetAt} 모임 참여가 가능한지`;
+  document.getElementById('ask-meet').textContent = `${meetAt} 스터디 참여가 가능한지`;
   const mail = document.getElementById('mail'); mail.href = 'mailto:' + S.email; mail.textContent = S.email;
   document.getElementById('threads').href = S.threadsUrl;
 })();

@@ -5,23 +5,34 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Google Teacher Lab</title>
 <meta name="description" content="Google 공인 교육자 Level 1·2와 공인 트레이너를 준비하는 교사 스터디. 시험 방식의 실습 미션, 판단 문제, 모의고사.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232f6b4f'/%3E%3Ctext x='16' y='23' font-size='18' font-family='Arial' font-weight='900' text-anchor='middle' fill='%23fff'%3EG%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231A73E8'/%3E%3Ctext x='16' y='23' font-size='18' font-family='Arial' font-weight='900' text-anchor='middle' fill='%23fff'%3EG%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="bau"> <!-- 메인 디자인: bau(바우하우스) / neu(뉴모피즘) -->
 <header class="top" id="top"></header>
 <main class="wrap">
   <section id="dash" hidden></section>
 
   <section class="hero" id="landing-hero">
+    <div class="bau-shapes" aria-hidden="true"><i class="c"></i><i class="q"></i><i class="t"></i></div>
     <span class="eyebrow" id="status-pill"></span>
-    <h1>Google 공인 교육자·트레이너<br><em>시험 준비 스터디</em></h1>
-    <p class="lead">평일에는 이 사이트의 미션으로 시험과 같은 방식의 실습과 판단 문제를 연습합니다. 매주 토요일 밤에는 Google Meet로 모여 Google 도구 하나를 같이 살펴보고, 모의고사를 함께 풀며 같이 성장합니다.</p>
+    <h1>스스로 공부하는<br><em>Google Teacher Lab</em></h1>
+    <p class="lead">Google 공인 교육자 시험을 준비하는 선생님들의 스터디입니다. 평일에는 이 사이트 미션으로 혼자 연습하고, 토요일 밤에는 Google Meet로 만나 그 주 구글 도구를 같이 공부하고 모의고사도 풀어 봅니다.</p>
     <ul class="facts" id="facts"></ul>
     <div class="btns">
       <a class="btn primary" href="join.html" id="hero-cta">신청하기</a>
       <a class="btn" href="path.html">단계별 과정 보기</a>
+    </div>
+  </section>
+
+  <section id="meet-sec" hidden>
+    <h2>토요일 온라인 스터디</h2>
+    <div class="meet" id="meet"></div>
+    <div class="ask card" id="ask" hidden>
+      <div><h3>💬 오픈채팅방</h3>
+        <p class="muted small" style="margin:0">구글 공부를 같이 할 분이라면 누구나 들어올 수 있습니다. 미션을 하다 막히거나 스터디에서 놓친 부분이 있으면 여기에 물어보세요. 미션 번호를 함께 적어 주시면 빨리 찾아 답할 수 있습니다. 확인하는 대로 답하지만, 운영자가 직장 생활을 함께 하고 있어 답이 늦을 수 있습니다.</p></div>
+      <a class="btn primary" id="ask-link" target="_blank" rel="noopener">오픈채팅방 들어가기 ↗</a>
     </div>
   </section>
 
@@ -44,19 +55,19 @@
         <ol class="timeline">
           <li><span class="when">월 ~ 목</span><span><b>실습 미션</b><br><span class="muted small">상황과 지시사항을 연습 계정으로 수행하고 판단 문제 3개를 풉니다. 미션당 10~20분.</span></span></li>
           <li><span class="when">금</span><span><b>실전 시나리오</b><br><span class="muted small">그 주에 다룬 도구를 합친 과제를 20분 안에 수행합니다.</span></span></li>
-          <li><span class="when" id="meet-day">토 21:00</span><span><b>정기 모임 50분</b><br><span class="muted small">Google Meet. 도구 하나를 같이 살펴보고 모의고사를 함께 풉니다. Level 1·2가 함께 진행합니다.</span></span></li>
+          <li><span class="when" id="meet-day">토 21:00</span><span><b>온라인 스터디 50분</b><br><span class="muted small">Google Meet. 그 주 구글 도구를 공부하고 모의고사를 풉니다.</span></span></li>
           <li><span class="when">일</span><span><b>휴식</b><br><span class="muted small">밀린 미션은 언제든 이어서 할 수 있습니다.</span></span></li>
         </ol>
       </div>
       <div class="card">
-        <h3>토요일 모임 진행</h3>
+        <h3>토요일 온라인 스터디 진행</h3>
         <ol class="timeline">
-          <li><span class="when">21:00</span><span>이번 주 도구 살펴보기 (15분)</span></li>
+          <li><span class="when">21:00</span><span>이번 주 구글 도구 공부 (15분)</span></li>
           <li><span class="when">21:15</span><span>화면을 보며 직접 눌러보기 (15분)</span></li>
           <li><span class="when">21:30</span><span>모의고사 함께 풀기 (10분)</span></li>
           <li><span class="when">21:40</span><span>함께 점검하고 다음 주 안내 (10분)</span></li>
         </ol>
-        <p class="tiny" style="margin:8px 0 0">모의고사는 끝나고 스스로 1차 점검을 하고, 운영 계정과 공유한 파일로 운영자가 2차 점검을 합니다. 모임은 녹화하지 않습니다.</p>
+        <p class="tiny" style="margin:8px 0 0">모의고사는 끝나고 스스로 1차 점검을 하고, 운영 계정과 공유한 파일로 운영자가 2차 점검을 합니다. 스터디는 녹화하지 않습니다.</p>
       </div>
     </div>
   </section>
@@ -81,7 +92,7 @@
         <h2 style="font-size:1.15rem">참여 대상</h2>
         <ul class="checks">
           <li>Google 공인 교육자 Level 1·2 또는 공인 트레이너를 준비하는 교사 (인증이 없으면 Level 1부터)</li>
-          <li><span id="who-meet">토요일 밤 9시</span> 모임에 참여할 수 있는 분 (함께반 기준)</li>
+          <li><span id="who-meet">토요일 밤 9시</span> 온라인 스터디에 참여하고 싶은 분 (스터디 없이 사이트만 써도 됩니다)</li>
           <li>개인 Google 계정으로 연습 계정을 하나 더 만들 수 있는 분</li>
         </ul>
         <p class="tiny" style="margin:10px 0 0">교사가 아니어도 교육 업무를 하고 있다면 참여할 수 있습니다.</p>
@@ -89,18 +100,13 @@
     </div>
   </section>
 
-  <section>
-    <h2 id="sched-title">일정</h2>
-    <div class="card narrow"><ol class="timeline" id="sched"></ol></div>
-  </section>
-
   <section class="narrow">
     <h2>자주 묻는 질문</h2>
     <details class="faq"><summary>비용이 있나요?</summary><p>스터디는 무료입니다. 2026년 10월 확인 기준으로 Level 1·2 한국어 시험은 무료이고, 트레이너 역량 평가는 미화 15달러로 안내되어 있습니다. 응시 전에 공식 화면에서 확인하세요.</p></details>
     <details class="faq"><summary>시험 형식은 어떻게 되나요?</summary><p>공식 안내 기준으로 한국어 Level 1·2는 객관식 37문항과 실습 시나리오 3개, 3시간입니다. 실습은 시험용 계정을 받아 지시사항을 수행하는 방식이어서 스터디도 연습 계정으로 같은 방식을 연습합니다. <a href="start.html#exam">자세히 보기</a></p></details>
     <details class="faq"><summary>스터디를 마치면 인증을 받나요?</summary><p>아닙니다. 인증과 트레이너 심사는 Google이 직접 진행합니다.</p></details>
-    <details class="faq"><summary>미션을 하다 막히면 어떻게 하나요?</summary><p>참여자 전용 카카오톡 오픈채팅 질문방에 미션 번호와 함께 질문합니다. 운영자는 수·금 저녁에 답변합니다. 질문방 링크는 신청자에게만 안내합니다.</p></details>
-    <details class="faq"><summary>토요일 모임에 빠지면 어떻게 되나요?</summary><p>미션은 언제든 이어서 할 수 있습니다. 그 주 모의고사는 질문방에 올라오니 혼자 풀어 보고 운영 계정과 공유하면 운영자가 확인해 드립니다.</p></details>
+    <details class="faq"><summary>미션을 하다 막히면 어떻게 하나요?</summary><p>카카오톡 오픈채팅방에 미션 번호와 함께 질문합니다. 운영자가 확인하는 대로 답하지만, 직장 생활을 함께 하고 있어 늦을 수 있습니다. 오픈채팅방 주소는 이 페이지의 '토요일 온라인 스터디' 아래에 있습니다.</p></details>
+    <details class="faq"><summary>토요일 스터디에 빠지면 어떻게 되나요?</summary><p>미션은 언제든 이어서 할 수 있습니다. 그 주 모의고사는 오픈채팅방에 올라오니 혼자 풀어 보고 운영 계정과 공유하면 운영자가 확인해 드립니다.</p></details>
     <details class="faq"><summary>학교 계정이 필요한가요?</summary><p>필요하지 않습니다. 개인 Google 계정과 연습 계정으로 진행합니다. 개인 계정에서 지원되지 않는 기능은 미션에 표시되어 있습니다. <a href="start.html#account">연습 계정 만들기</a></p></details>
     <details class="faq"><summary>연수 이수 시간으로 인정되나요?</summary><p>자율 스터디이므로 나이스 연수 이력에 등록되지 않습니다.</p></details>
     <details class="faq"><summary>학습 기록은 어디에 저장되나요?</summary><p>사용 중인 브라우저에만 저장되며 운영자에게 전송되지 않습니다. 다른 기기로 옮기려면 <a href="my.html">내 기록</a>에서 백업 파일을 사용하세요.</p></details>

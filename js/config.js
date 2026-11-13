@@ -15,11 +15,21 @@ window.SITE = {
   levelWeeks: 6,
   trainerWeeks: 8,
   meeting: { day: '토요일', time: '밤 9시 ~ 9시 50분', place: 'Google Meet' },
-  capacity: 'Trainer반 8명 · Level 1·2반 각 10명 내외', // 비우면 표시 안 함
+  // 토요일 모임 주제. 홈 화면 '토요일 모임'에 보여요. 미트 주소·모의고사 링크는 넣지 않아요(질문방에서만 안내).
+  meetings: [
+    { date: '2026-10-17', tool: '오리엔테이션', note: '스터디 소개, 인증 시험 알아보기' },
+    { date: '2026-10-24', tool: 'Google Forms', note: '도구 설명 · 직접 눌러보기 · 모의고사' },
+    { date: '2026-10-31', tool: 'Google Docs', note: '공유 · 댓글 · 제안 모드' },
+    { date: '2026-11-07', tool: 'Google Sheets', note: '정렬 · 함수 · 조건부 서식 · 차트' },
+    { date: '2026-11-14', tool: 'Google Slides', note: '시트 모의고사 돌아보기 + 슬라이드', prep: ['컴퓨터로 접속하기', '지난주 시트 파일 열어 두기'] },
+    { date: '2026-11-21', tool: 'Calendar · Meet · Sites', note: '일정 만들기부터 안내 사이트 게시까지', prep: ['컴퓨터로 접속하기'] },
+  ],
+  capacity: '', // 비우면 표시 안 함
   // 정원이 찬 반을 넣으면 신청 페이지에 '혼자 도전' 안내가 강조돼요. 예: ['trainer'] / 모두 차면 ['level1', 'level2', 'trainer']
   full: [],
   lateJoinUntil: '2026-10-24',  // 진행 중 이 날짜(2주차 토요일)까지는 중간 합류 신청을 받아요
   formUrl: 'https://forms.gle/iXYuCoBNzi985Rve9', // 구글 설문지 신청 링크. 비우면 '준비 중'으로 표시
+  chatUrl: 'https://open.kakao.com/o/gepQgXRi', // 카카오톡 오픈채팅 질문방 주소. 비우면 홈의 질문방 버튼이 숨겨져요
   threadsUrl: 'https://www.threads.com/@olivece2017',
   email: 'ggteacherlab@gmail.com',
   leader: {
