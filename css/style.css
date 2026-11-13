@@ -338,7 +338,7 @@ h2 { letter-spacing: -0.02em; }
    빨강·파랑·노랑 + 검정, 동그라미·네모·세모, 그림자 없는 평평한 면과 굵은 선 */
 .bau-shapes { display: none; }
 .bau { --bg: #f5f2ea; --card: #ffffff; --ink: #141414; --ink-2: #3a3a3a; --ink-3: #6b6b6b; --line: #141414;
-  --red: #e23d28; --blue: #1f5fd1; --yellow: #f6c21c; --green: var(--blue); --green-ink: #163f8c; --green-soft: #e3ebfb; --radius: 0px; }
+  --red: #e23d28; --blue: #1f5fd1; --yellow: #f6c21c; --green: var(--blue); --green-ink: #163f8c; --green-soft: #fdf0c2; --sky-soft: #efeadf; --sky-ink: #141414; --plum-soft: #efeadf; --plum-ink: #141414; --sun-soft: #fdf0c2; --sun-ink: #141414; --radius: 0px; }
 .bau .top { background: var(--bg); backdrop-filter: none; -webkit-backdrop-filter: none; border-bottom: 3px solid var(--ink); box-shadow: none; }
 .bau .brand .logo { background: var(--blue); border-radius: 50%; }
 .bau .nav a { border-radius: 0; font-weight: 700; }
@@ -414,3 +414,31 @@ h2 { letter-spacing: -0.02em; }
 .update-toast button { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: none; border: 0; color: #fff; font-size: 1.3rem; cursor: pointer; padding: 4px 8px; }
 .update-toast.out { opacity: 0; }
 @media (max-width: 640px) { .update-toast { bottom: 84px; } }
+
+/* 바우하우스: 공부 페이지(미션·과정·모의고사·복습·자료)에도 같은 모양 */
+.bau .stepper button { border-radius: 0; background: #fff; border: 2px solid var(--ink); color: var(--ink); }
+.bau .stepper button[aria-current="step"] { background: var(--blue); color: #fff; }
+.bau .stepper button.ok { background: var(--yellow); color: var(--ink); }
+.bau .quiz-opt, .bau .check, .bau textarea, .bau input[type="text"] { border-radius: 0; border: 2px solid var(--ink); }
+.bau .quiz-opt:hover:not(:disabled) { background: #fdf0c2; border-color: var(--ink); }
+.bau .quiz-opt.right, .bau .quiz-opt.picked { background: #dfe8fb; border-color: var(--blue); }
+.bau .quiz-opt.wrong { background: #fde3df; border-color: var(--red); }
+.bau .material pre, .bau .tpl { border-radius: 0; border: 2px dashed var(--ink); background: #fffdf6; }
+.bau .tabs a, .bau .toc a { border-radius: 0; border: 2px solid var(--ink); color: var(--ink); background: #fff; }
+.bau .tabs a[aria-current="true"] { background: var(--yellow); border-color: var(--ink); color: var(--ink); }
+.bau .is-now { box-shadow: 6px 6px 0 var(--yellow); border-color: var(--ink); }
+.bau .exam-bar { background: var(--bg); border-bottom: 3px solid var(--ink); }
+.bau .qgrid button { border-radius: 0; border: 2px solid var(--ink); }
+.bau .qgrid button.ans { background: var(--yellow); }
+.bau .fb-good { background: #dfe8fb; color: var(--ink); border-radius: 0; border-left: 6px solid var(--blue); }
+.bau .fb-again { background: #fdf0c2; color: var(--ink); border-radius: 0; border-left: 6px solid var(--yellow); }
+.bau .weekdots a { border-radius: 0; }
+.bau .weekdots a.done { background: var(--blue); }
+.bau .chiplist li a, .bau .chiplist li span { border-radius: 0; }
+.bau .panel-nav .btn, .bau .pager .btn { border-radius: 0; }
+.bau .hbar .bar i { background: var(--blue); }
+.bau .result-big .score { color: var(--blue); }
+.bau a { color: var(--blue); }
+.bau .nav a, .bau .tabbar a, .bau a.btn, .bau a.card, .bau a.tile { color: inherit; }
+.bau .nav a.cta, .bau .btn.primary { color: #fff; }
+.bau .note { background: #fdf3cf; border-width: 2px; }
