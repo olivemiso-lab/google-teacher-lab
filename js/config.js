@@ -1,13 +1,14 @@
 // 운영자가 직접 고치는 설정. 기수가 바뀌면 이 파일만 고치면 된다.
 // 날짜는 모두 한국 날짜(YYYY-MM-DD).
 window.SITE = {
-  version: '20261114-0845', // node tools/bump-version.mjs 가 정해요. 손으로 고치지 않아요
-  updateNote: '운영자 소개가 바뀌었습니다.', // 업데이트 안내에 함께 보일 한 줄 (bump-version이 채워요)
+  version: '20261119-2230', // node tools/bump-version.mjs 가 정해요. 손으로 고치지 않아요
+  updateNote: '기수 없이 언제든 시작하는 자율 스터디로 바뀌었습니다.', // 업데이트 안내에 함께 보일 한 줄 (bump-version이 채워요)
   name: 'Google Teacher Lab',
   subtitle: 'Google 인증 준비 교사 스터디',
   cohort: '', // 기수 이름(예: '1기'). 비우면 화면에 기수를 표시하지 않아요
-  // recruiting(모집 중) · running(진행 중) · break(다음 기수 준비 중)
-  status: 'running',
+  // open(상시 자율 스터디: 기수·신청 없이 언제든 시작, 주차·날짜 표시 없음)
+  // recruiting(모집 중) · running(진행 중) · break(다음 기수 준비 중) — 아래 모집·시작 날짜는 이 세 가지일 때만 써요
+  status: 'open',
   recruitOpen: '2026-10-10T20:00:00+09:00', // 신청 시작 시각(한국 시간). 이 전에는 남은 시간을 보여 줘요
   recruitEnd: '2026-10-11',     // 모집 마감일
   recruitEndTime: '밤 9시',      // 마감 시각 표시

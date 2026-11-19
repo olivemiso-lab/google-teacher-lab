@@ -61,6 +61,10 @@ ok(G.isDone('l1-1-2'), '실습 + 판단 문제를 모두 하면 학습 완료');
 ok(G.weakness('level1').recent.length > 0, '틀린 개념이 약점 요약에 나옴');
 ok(G.questions('level1').every((x) => G.DOMAINS.level1[x.domain]), '문제마다 Level 1 평가 영역이 있음');
 ok(G.questions('level2').every((x) => G.DOMAINS.level2[x.domain]), '문제마다 Level 2 평가 영역이 있음');
+if (S.status === 'open') {
+  ok(G.studyNow('2027-03-02').phase === 'open', '상시 자율 스터디면 기수 주차 없이 open');
+  ok(G.nextMission('level2') && G.nextMission('level2').track === 'level2', '상시 스터디에서도 이어서 할 미션을 찾음');
+}
 ok(G.nextMeeting('2026-10-12') === '2026-10-17' && G.nextMeeting('2026-10-17') === '2026-10-17' && G.nextMeeting('2026-10-18') === '2026-10-24', '다음 토요일 모임 계산');
 
 console.log(fail ? `\n${fail}개 실패` : '\n모두 통과');

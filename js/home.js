@@ -1,11 +1,11 @@
 (function () {
-  const { S, C, STAGES, esc, fmt, fmtShort, kstToday, cohortNow, addDays, daysBetween, nextMeeting, store, isDone, progress, stats, reviewQueue, weakSkills, nextMission, header } = window.GTL;
+  const { S, C, STAGES, esc, fmt, fmtShort, kstToday, cohortNow, studyNow, addDays, daysBetween, nextMeeting, store, isDone, progress, stats, reviewQueue, weakSkills, nextMission, header } = window.GTL;
   // ?pick=level1 처럼 들어오면 단계를 정하고 학습실을 연다
   const pick = new URLSearchParams(location.search).get('pick');
   if (pick && STAGES[pick]) { store.setStage(pick); history.replaceState(null, '', 'index.html'); }
   header('index.html');
   const today = kstToday();
-  const now = cohortNow(today);
+  const now = studyNow(today);
   const meetShort = `${S.meeting.day.slice(0, 1)} 21:00`;
 
   // 상단 상태
@@ -19,6 +19,9 @@
           if (r.state === 'closed') return `${S.cohort ? S.cohort + ' ' : ''}신청 마감`;
           return `${S.cohort ? S.cohort + ' ' : ''}신청 받는 중 · ${fmt(S.recruitEnd)} ${S.recruitEndTime || ''} 마감`; })();
     cta.textContent = `${S.cohort ? S.cohort + ' ' : ''}신청하기`;
+  } else if (S.status === 'open') {
+    pill.textContent = '언제든 시작 · 매주 토요일 함께';
+    cta.textContent = '참여 안내';
   } else if (S.status === 'running') {
     pill.textContent = now.phase === 'running' ? `${S.cohort ? S.cohort + ' ' : ''}진행 중 · ${now.week}주차` : `${S.cohort ? S.cohort + ' ' : ''}진행 중`;
     cta.textContent = '참여 안내';
@@ -43,7 +46,7 @@
   const weeks = { level1: S.levelWeeks, level2: S.levelWeeks, trainer: S.trainerWeeks };
   document.getElementById('stages').innerHTML = Object.entries(STAGES).map(([k, s], i) => `
     <a class="card step${mine === k ? ' mine' : ''}" href="?pick=${k}" aria-label="${s.name}로 학습실 열기">
-      <span><span class="tag s-${k}">${s.icon} ${i + 1}단계 · ${weeks[k]}주</span>${mine === k ? ' <span class="tag t-sun">내 단계</span>' : ''}</span>
+      <span><span class="tag s-${k}">${s.icon} ${i + 1}단계 · ${S.status === 'open' ? '권장 ' : ''}${weeks[k]}주</span>${mine === k ? ' <span class="tag t-sun">내 단계</span>' : ''}</span>
       <h3 style="margin:6px 0 0">${s.name}</h3>
       <span class="who">${esc(s.who)}</span>
       <ul>${detail[k].map((d) => `<li>${esc(d)}</li>`).join('')}</ul>
@@ -74,7 +77,15 @@
   };
   const find = (t, w, d) => C.missions.find((m) => m.track === t && m.week === w && m.day === d);
 
-  if (now.phase === 'before') {
+  if (now.phase === 'open') {
+    // 상시 스터디: 날짜와 상관없이 각자 이어서 할 미션
+    const list = tracks.map((t) => nextMission(t)).filter(Boolean);
+    if (list.length) {
+      document.getElementById('today-title').textContent = '바로 시작하는 미션';
+      box.innerHTML = list.map((m) => card(m, `${m.week}주차 ${'월화수목금'[m.day - 1]}요일 미션`)).join('');
+      sec.hidden = false;
+    }
+  } else if (now.phase === 'before') {
     if (now.daysLeft <= 60) {
       document.getElementById('today-title').textContent = `${S.cohort ? S.cohort + ' ' : ''}시작까지 ${now.daysLeft}일 · 1주차 미리 보기`;
       box.innerHTML = tracks.map((t) => card(find(t, 1, 1), '1주차 월요일')).join('');
@@ -103,16 +114,16 @@
 
 // ── 내 학습실: 단계를 고른 사람에게 가장 먼저 보여 주는 화면
 (function () {
-  const { S, C, STAGES, esc, fmt, kstToday, cohortNow, daysBetween, nextMeeting, store, isDone, progress, stats, reviewQueue, weakSkills, nextMission } = window.GTL;
+  const { S, C, STAGES, esc, fmt, kstToday, cohortNow, studyNow, daysBetween, nextMeeting, store, isDone, progress, stats, reviewQueue, weakSkills, nextMission } = window.GTL;
   const stage = store.get().stage;
   if (!stage) return;
   const dash = document.getElementById('dash');
   const today = kstToday();
-  const now = cohortNow(today);
+  const now = studyNow(today);
   const meet = nextMeeting(today);
   const dday = daysBetween(today, meet);
   const meetText = dday === 0 ? '오늘 밤 9시' : `${fmt(meet)} 밤 9시 · D-${dday}`;
-  const where = now.phase === 'before' ? `${S.cohort ? S.cohort + ' ' : ''}시작까지 ${now.daysLeft}일` : now.levelDone && stage !== 'trainer' ? '과정을 모두 마쳤어요 · 자유 복습' : `${now.week}주차 ${'월화수목금토일'[now.dow - 1]}요일`;
+  const where = now.phase === 'open' ? '내 속도로' : now.phase === 'before' ? `${S.cohort ? S.cohort + ' ' : ''}시작까지 ${now.daysLeft}일` : now.levelDone && stage !== 'trainer' ? '과정을 모두 마쳤어요 · 자유 복습' : `${now.week}주차 ${'월화수목금토일'[now.dow - 1]}요일`;
   document.getElementById('landing-hero').hidden = true;
   document.getElementById('today-sec').hidden = true;
   document.getElementById('pick-title').textContent = '단계 바꾸기';
@@ -176,7 +187,7 @@
 
 // ── 토요일 모임: 이번 주 주제 + 지난 모임 (설정의 meetings에서)
 (function () {
-  const { S, esc, fmt, fmtShort, kstToday, daysBetween } = window.GTL;
+  const { S, esc, fmt, fmtShort, kstToday, daysBetween, nextMeeting } = window.GTL;
   const list = (S.meetings || []).slice().sort((a, b) => a.date.localeCompare(b.date));
   if (!list.length) return;
   const today = kstToday();
@@ -193,6 +204,15 @@
       ${next.note ? `<p class="muted">${esc(next.note)}</p>` : ''}
       <ol class="meet-flow"><li>도구 공부</li><li>직접 눌러보기</li><li>모의고사 함께 풀기</li><li>함께 점검</li></ol>
       ${next.prep && next.prep.length ? `<p class="small" style="margin:12px 0 0"><b>준비</b> ${next.prep.map(esc).join(' · ')}</p>` : ''}
+      <p class="tiny" style="margin:8px 0 0">미트 주소와 모의고사는 오픈채팅방에서 안내합니다.</p>
+    </div>`;
+  } else if (S.status === 'open') {
+    const day = nextMeeting(today), d = daysBetween(today, day);
+    html += `<div class="meet-next">
+      <div class="meet-when"><span class="dday">${d === 0 ? 'TODAY' : 'D-' + d}</span><span>${esc(d === 0 ? '오늘 ' + time : fmt(day) + ' ' + time)} · ${esc(S.meeting.place)}</span></div>
+      <h3>이번 주 모의고사</h3>
+      <p class="muted">그 주에 공부할 구글 도구와 모의고사는 오픈채팅방에서 안내합니다.</p>
+      <ol class="meet-flow"><li>도구 공부</li><li>직접 눌러보기</li><li>모의고사 함께 풀기</li><li>함께 점검</li></ol>
       <p class="tiny" style="margin:8px 0 0">미트 주소와 모의고사는 오픈채팅방에서 안내합니다.</p>
     </div>`;
   }

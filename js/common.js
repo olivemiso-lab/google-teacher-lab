@@ -38,6 +38,8 @@
     const dow = (diff % 7) + 1; // 1=월 … 7=일
     return { phase: 'running', week, dow, levelDone: week > S.levelWeeks, trainerDone: week > S.trainerWeeks };
   }
+  // 상시 자율 스터디(open)면 기수 달력 없이 각자 속도로: phase 'open'
+  const studyNow = (today = kstToday()) => (S.status === 'open' ? { phase: 'open' } : cohortNow(today));
   const missionDate = (m) => addDays(S.start, (m.week - 1) * 7 + (m.day - 1));
   // 신청 상태: before(열리기 전) · open(받는 중) · closed(마감)
   function recruitState(now = Date.now()) {
@@ -146,7 +148,7 @@
   }
   function nextMission(track) {
     const list = C.missions.filter((m) => m.track === track);
-    const now = cohortNow();
+    const now = studyNow();
     const open = now.phase === 'running' ? list.filter((m) => missionDate(m) <= kstToday()) : [];
     return open.find((m) => !isDone(m.id)) || list.find((m) => !isDone(m.id)) || null;
   }
@@ -171,11 +173,11 @@
     tabbar.innerHTML = TABS.map(([href, icon, label]) => `<a href="${href}"${current === href ? ' aria-current="page"' : ''}><span aria-hidden="true">${icon}</span>${label}${href === 'review.html' && q ? `<i class="badge">${q}</i>` : ''}</a>`).join('');
     document.body.appendChild(tabbar);
     document.getElementById('foot').innerHTML = `<div class="wrap">
-      <p>${esc(S.name)}는 Google 공식 과정이 아니며, 교사가 운영하는 스터디입니다. 인증 시험 형식·비용·절차는 바뀔 수 있으니 응시 전에 꼭 공식 페이지에서 확인하세요. 실제 시험 문항은 다루지 않습니다.</p>
+      <p>${esc(S.name)}는 Google 공식 과정이 아니며, Google과 관계없이 교사가 운영하는 자율 스터디입니다. 인증 시험 형식·비용·절차는 바뀔 수 있으니 응시 전에 꼭 공식 페이지에서 확인하세요. 실제 시험 문항은 다루지 않습니다.</p>
       <p>학습 기록은 이 브라우저에만 저장되고 운영자에게 전송되지 않습니다. <a href="my.html">내 기록·백업</a> · <a href="start.html">시작 준비</a> · 문의 <a href="mailto:${esc(S.email)}">${esc(S.email)}</a> · <a href="${esc(S.threadsUrl)}" rel="noopener" target="_blank">스레드</a></p></div>`;
   }
 
-  window.GTL = { S, C, STAGES, DOMAINS, DAY, esc, rich, kstToday, daysBetween, addDays, fmt, fmtShort, cohortNow, missionDate, nextMeeting, recruitState, openLabel,
+  window.GTL = { S, C, STAGES, DOMAINS, DAY, esc, rich, kstToday, daysBetween, addDays, fmt, fmtShort, cohortNow, studyNow, missionDate, nextMeeting, recruitState, openLabel,
     store, isDone, isPracticed, quizDone, weakness, progress, qKey, domainOf, questions, stats, reviewQueue, weakSkills, nextMission, header };
 })();
 

@@ -1,6 +1,7 @@
 // 미션 연습실: 준비 → 실습 → 점검 → 판단 문제 → 결과를 한 단계씩.
 (function () {
   const { S, C, STAGES, DAY, esc, rich, fmt, missionDate, store, qKey, header } = window.GTL;
+  const calText = (m) => S.status === 'open' ? '' : `${S.cohort ? S.cohort + ' ' : ''}달력 ${fmt(missionDate(m))} · `;
   header('path.html');
   const body = document.getElementById('body');
   const id = new URLSearchParams(location.search).get('id');
@@ -43,7 +44,7 @@
         ${m.tools.map((t) => `<span class="tag" style="border:1px solid var(--line)">${esc(t)}</span>`).join('')}
       </div>
       <h1 style="font-size:1.6rem">${esc(m.title)}</h1>
-      <p class="tiny">${S.cohort ? S.cohort + ' ' : ''}달력 ${fmt(missionDate(m))} · 공식 평가 목표 ${esc(m.objectives.join(', '))}</p>
+      <p class="tiny">${calText(m)}공식 평가 목표 ${esc(m.objectives.join(', '))}</p>
     </div>
     <ol class="stepper" id="stepper">${STEPS.map((s, i) => `<li><button data-go="${i}">${i + 1}. ${s}</button></li>`).join('')}</ol>
 
