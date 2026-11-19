@@ -70,6 +70,7 @@
       <div class="week-head"><h2 style="margin:0">🎓 Trainer · ${S.trainerWeeks}주</h2>${pickButton()}</div>
       <p class="muted">${S.trainerWeeks}주 동안 지원서 준비를 마치는 것이 목표입니다. Level 1·2 인증이 있거나 곧 응시할 예정이면 적합합니다.</p>
       <p class="note small" style="margin:0">트레이너 지원에는 최근 1년간 직접 이끈 Google 관련 연수·활동 3~5개가 필요해요. 이 경험을 처음부터 쌓아야 한다면 Level 2부터 함께 공부하면서 경험을 쌓고 Trainer로 넘어가는 걸 추천해요. 스터디 미니 연수가 공식 사례로 인정되는지는 Google이 판단해요.</p>
+      <p class="note small" style="margin:10px 0 0">공식 안내 페이지의 '필수 과정은 아니지만'은 시험 준비 강좌(기초·고급 교육 과정) 이야기예요. Level 1·2 인증은 트레이너 지원과 자격 유지에 필요해요.</p>
       <p class="note green small" style="margin:10px 0 0"><b>이미 연수를 하고 계신 선생님께</b> · 최근 1년 안에 학교나 지역에서 직접 이끈 Google 도구 연수(Workspace for Education, Gemini 등)가 있다면, 그 연수가 지원서의 활동 기록이 될 수 있어요. 이런 경우에는 7주차 '활동 3~5개 정리'를 먼저 해 두고 트레이너 과정 → 역량 평가 → 시연 영상 순서로 준비하면 더 빨라요. 활동으로 인정되는지는 Google이 판단해요.</p>
     </div>
     <h2>주차별 계획</h2>
