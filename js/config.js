@@ -1,8 +1,8 @@
 // 운영자가 직접 고치는 설정. 기수가 바뀌면 이 파일만 고치면 된다.
 // 날짜는 모두 한국 날짜(YYYY-MM-DD).
 window.SITE = {
-  version: '20261119-2230', // node tools/bump-version.mjs 가 정해요. 손으로 고치지 않아요
-  updateNote: '기수 없이 언제든 시작하는 자율 스터디로 바뀌었습니다.', // 업데이트 안내에 함께 보일 한 줄 (bump-version이 채워요)
+  version: '20261119-2244', // node tools/bump-version.mjs 가 정해요. 손으로 고치지 않아요
+  updateNote: '새 디자인(흰 바탕 종이 공작)으로 바뀌었습니다.', // 업데이트 안내에 함께 보일 한 줄 (bump-version이 채워요)
   name: 'Google Teacher Lab',
   subtitle: 'Google 인증 준비 교사 스터디',
   cohort: '', // 기수 이름(예: '1기'). 비우면 화면에 기수를 표시하지 않아요

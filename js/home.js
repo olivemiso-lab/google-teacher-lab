@@ -46,6 +46,7 @@
   const weeks = { level1: S.levelWeeks, level2: S.levelWeeks, trainer: S.trainerWeeks };
   document.getElementById('stages').innerHTML = Object.entries(STAGES).map(([k, s], i) => `
     <a class="card step${mine === k ? ' mine' : ''}" href="?pick=${k}" aria-label="${s.name}로 학습실 열기">
+      <img class="stage-badge" src="img/badge-${k}.webp" width="240" height="240" alt="" loading="lazy">
       <span><span class="tag s-${k}">${s.icon} ${i + 1}단계 · ${S.status === 'open' ? '권장 ' : ''}${weeks[k]}주</span>${mine === k ? ' <span class="tag t-sun">내 단계</span>' : ''}</span>
       <h3 style="margin:6px 0 0">${s.name}</h3>
       <span class="who">${esc(s.who)}</span>
@@ -133,6 +134,7 @@
     const nextStep = C.trainer.find((_, i) => !store.get().notes['road-' + (i + 1)]);
     dash.innerHTML = `
       <div class="dash-hero"><div>
+        <img class="dash-badge" src="img/badge-${nextStep ? 'trainer' : 'trophy'}.webp" width="240" height="240" alt="">
         <span class="tag" style="background:rgba(255,255,255,.18);color:#fff">🎓 Trainer · ${esc(where)}</span>
         <h1>${nextStep ? esc(nextStep.title.split('·')[0].trim()) + ' 단계' : '로드맵 8단계 완료'}</h1>
         <p>공식 로드맵 ${done}/8단계 완료</p>
@@ -156,6 +158,7 @@
   const first = !Object.keys(store.get().missions).length && !s.answered;
   dash.innerHTML = `
     <div class="dash-hero"><div>
+      <img class="dash-badge" src="img/badge-${nm ? stage : 'trophy'}.webp" width="240" height="240" alt="">
       <span class="tag" style="background:rgba(255,255,255,.18);color:#fff">${STAGES[stage].icon} ${STAGES[stage].name} · ${esc(where)}</span>
       <h1>${first ? '첫 미션' : nm ? '이어서 학습하기' : '미션 30개 완료'}</h1>
       <p>${nm ? `${nm.week}주차 ${'월화수목금'[nm.day - 1]} · ${esc(nm.title)}` : '모의고사와 복습으로 마무리하세요.'}</p>
